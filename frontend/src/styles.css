@@ -1032,7 +1032,7 @@ textarea:focus {
 
   flex-direction: column;
 
-  min-height: 260px;
+  min-height: 520px;
 
   transition: 0.2s ease;
 
@@ -1447,4 +1447,10 @@ textarea:focus {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.imagen img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }

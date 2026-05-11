@@ -1,38 +1,81 @@
+import { calcularDatosTablero } from "../utils/calculosTablero";
+
 function TableroDetalle({ tablero }) {
   if (!tablero) {
     return null;
   }
 
+  const datosCalculados = calcularDatosTablero(tablero);
+
   const calculos = [
     {
-      label: "Altura tablero",
-      value: tablero.altura_tablero || "-",
+      label: "Bajada llave luz",
+      value: datosCalculados.bajada_llave_luz,
       color: "blue",
-      icon: "▦",
+      icon: "↓",
     },
+
     {
-      label: "Altura toma",
-      value: tablero.altura_toma || "-",
+      label: "Bajada toma",
+      value: datosCalculados.bajada_toma,
       color: "green",
       icon: "⚡",
     },
+
     {
-      label: "Llave luz",
-      value: tablero.altura_llave_luz || "-",
+      label: "Bajada tablero",
+      value: datosCalculados.bajada_tablero,
       color: "orange",
-      icon: "◫",
+      icon: "▦",
     },
+
     {
-      label: "Altura brazo",
-      value: tablero.altura_brazo || "-",
+      label: "Bajada brazo",
+      value: datosCalculados.bajada_brazo,
       color: "purple",
       icon: "↕",
     },
+
     {
-      label: "Altura especial",
-      value: tablero.altura_especial || "-",
+      label: "Bajada especial",
+      value: datosCalculados.bajada_especial,
       color: "blue",
       icon: "◎",
+    },
+
+    {
+      label: "Total tablero",
+      value: datosCalculados.total_tablero,
+      color: "green",
+      icon: "◩",
+    },
+
+    {
+      label: "Total caja honda",
+      value: datosCalculados.total_caja_honda,
+      color: "orange",
+      icon: "◫",
+    },
+
+    {
+      label: "Total caja centro",
+      value: datosCalculados.total_caja_centro,
+      color: "purple",
+      icon: "✦",
+    },
+
+    {
+      label: "Total caja brazo",
+      value: datosCalculados.total_caja_brazo,
+      color: "blue",
+      icon: "▤",
+    },
+
+    {
+      label: "Total h especial",
+      value: datosCalculados.total_h_especial,
+      color: "green",
+      icon: "◆",
     },
   ];
 
@@ -43,24 +86,28 @@ function TableroDetalle({ tablero }) {
       icon: "⚡",
       color: "blue",
     },
+
     {
       title: "Bandejas",
       description: "Distribución y recorrido de bandejas.",
       icon: "▤",
       color: "green",
     },
+
     {
       title: "Cañerías",
       description: "Canalizaciones y conexiones técnicas.",
       icon: "◫",
       color: "orange",
     },
+
     {
       title: "Iluminación",
       description: "Configuración de luminarias y alturas.",
       icon: "✦",
       color: "purple",
     },
+
     {
       title: "Materiales",
       description: "Consolidado técnico y metrados.",
@@ -89,9 +136,9 @@ function TableroDetalle({ tablero }) {
       <section className="detalle-section">
         <div className="section-header">
           <div>
-            <p className="eyebrow">Cálculos</p>
+            <p className="eyebrow">Cálculos automáticos</p>
 
-            <h3>Métricas técnicas</h3>
+            <h3>Resultados técnicos derivados</h3>
           </div>
         </div>
 
@@ -109,7 +156,7 @@ function TableroDetalle({ tablero }) {
 
               <span>{item.label}</span>
 
-              <strong>{item.value}</strong>
+              <strong>{Number(item.value).toFixed(2)}</strong>
             </article>
           ))}
         </div>

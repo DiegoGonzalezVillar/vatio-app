@@ -3,7 +3,9 @@ function DashboardLayout({ children, currentPage, onNavigate }) {
     <div className="dashboard-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="brand-mark">⚡</div>
+          <div className="imagen">
+            <img src="/favicon.svg" alt="Vatio" />
+          </div>
           <div>
             <h1>Vatio</h1>
             <span>Metrado eléctrico</span>
