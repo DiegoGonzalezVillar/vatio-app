@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Layout from "./components/Layout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import HomePage from "./pages/HomePage";
 import ObrasPage from "./pages/ObrasPage";
 import ObraDetallePage from "./pages/ObraDetallePage";
@@ -14,7 +14,7 @@ function App() {
   };
 
   return (
-    <Layout>
+    <DashboardLayout currentPage={page} onNavigate={setPage}>
       {page === "home" && (
         <HomePage
           onGoObras={() => setPage("obras")}
@@ -32,7 +32,7 @@ function App() {
           onBack={() => setPage("obras")}
         />
       )}
-    </Layout>
+    </DashboardLayout>
   );
 }
 

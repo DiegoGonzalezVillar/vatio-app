@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { getObras } from "../services/api";
+import Button from "../components/ui/Button";
+import PageHeader from "../components/ui/PageHeader";
+import EmptyState from "../components/ui/EmptyState";
 
 function ObrasPage({ onBack, onVerObra }) {
   const [obras, setObras] = useState([]);
@@ -19,41 +22,82 @@ function ObrasPage({ onBack, onVerObra }) {
   );
 
   return (
-    <div className="page-card">
-      <div className="section-header">
-        <div>
-          <p className="eyebrow">Gestión</p>
-          <h2>Obras</h2>
-        </div>
-
-        <button className="btn-secondary" onClick={onBack}>
-          ← Volver
-        </button>
-      </div>
-
-      <input
-        placeholder="Buscar obra..."
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
+    <div>
+      <PageHeader
+        eyebrow="Gestión"
+        title="Obras"
+        description="Administra las obras cargadas y accede al detalle técnico de cada una."
+        action={
+          <Button variant="secondary" onClick={onBack}>
+            ← Volver
+          </Button>
+        }
       />
 
-      <div className="tableros-list">
-        {obrasFiltradas.map((obra) => (
-          <div className="tablero-card" key={obra.id}>
-            <h3>{obra.nombre}</h3>
-            <p>
-              <strong>Contacto:</strong> {obra.nombre_contacto || "-"}
-            </p>
-            <p>
-              <strong>Ubicación:</strong> {obra.ubicacion || "-"}
-            </p>
-
-            <button className="btn-primary" onClick={() => onVerObra(obra)}>
-              Ver / modificar
-            </button>
+      <section className="page-card obras-panel">
+        <div className="obras-toolbar">
+          <div className="obras-search">
+            <span>⌕</span>
+            <input
+              placeholder="Buscar obra..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
           </div>
-        ))}
-      </div>
+
+          <div className="obras-counter">
+            <span>{obrasFiltradas.length}</span>
+            obras encontradas
+          </div>
+        </div>
+
+        {obrasFiltradas.length === 0 ? (
+          <EmptyState
+            title="No se encontraron obras"
+            description="Prueba con otro nombre o carga una nueva obra."
+          />
+        ) : (
+          <div className="obras-grid">
+            {obrasFiltradas.map((obra, index) => {
+              const colors = ["blue", "green", "orange", "purple"];
+              const color = colors[index % colors.length];
+
+              return (
+                <article className="obra-card" key={obra.id}>
+                  <div>
+                    <p className={`obra-label ${color}`}>Obra #{obra.id}</p>
+                    <h3>{obra.nombre}</h3>
+                  </div>
+
+                  <div className="obra-card-meta">
+                    <p>
+                      <span>Contacto:</span>
+                      <strong>{obra.nombre_contacto || "-"}</strong>
+                    </p>
+
+                    <p>
+                      <span>Ubicación:</span>
+                      <strong>{obra.ubicacion || "-"}</strong>
+                    </p>
+
+                    <p>
+                      <span>Teléfono:</span>
+                      <strong>{obra.telefono_contacto || "-"}</strong>
+                    </p>
+                  </div>
+
+                  <button
+                    className={`open-mini-btn ${color}`}
+                    onClick={() => onVerObra(obra)}
+                  >
+                    → Ver / modificar
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

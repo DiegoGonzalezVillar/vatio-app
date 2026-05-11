@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { getTableros, createTablero, getLastTablero } from "../services/api";
+
 import TableroForm from "../components/TableroForm";
 import TablerosList from "../components/TablerosList";
 import TableroDetalle from "../components/TableroDetalle";
 
+import Button from "../components/ui/Button";
+import PageHeader from "../components/ui/PageHeader";
+import EmptyState from "../components/ui/EmptyState";
+
 function ObraDetallePage({ obra, onBack }) {
   const [tableros, setTableros] = useState([]);
+  const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
 
   const [nombreTablero, setNombreTablero] = useState("");
   const [alturaLocal, setAlturaLocal] = useState("");
@@ -21,18 +27,21 @@ function ObraDetallePage({ obra, onBack }) {
   const [agregadoHEspecial, setAgregadoHEspecial] = useState("");
   const [tipoTableroId, setTipoTableroId] = useState(1);
 
-  const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
-
   useEffect(() => {
     if (!obra?.id) return;
 
-    async function cargarTableros() {
+    async function cargarTablerosIniciales() {
       const data = await getTableros(obra.id);
       setTableros(data);
     }
 
-    cargarTableros();
+    cargarTablerosIniciales();
   }, [obra]);
+
+  const cargarTableros = async () => {
+    const data = await getTableros(obra.id);
+    setTableros(data);
+  };
 
   const limpiarFormularioTablero = () => {
     setNombreTablero("");
@@ -50,11 +59,6 @@ function ObraDetallePage({ obra, onBack }) {
     setTipoTableroId(1);
   };
 
-  const cargarTableros = async () => {
-    const data = await getTableros(obra.id);
-    setTableros(data);
-  };
-
   const handleCrearTablero = async (e) => {
     e.preventDefault();
 
@@ -67,7 +71,6 @@ function ObraDetallePage({ obra, onBack }) {
       obra_id: Number(obra.id),
       nombre: nombreTablero,
       tipo_tablero_id: Number(tipoTableroId),
-
       altura_local: alturaLocal,
       altura_tablero: alturaTablero,
       agregado_tablero: agregadoTablero,
@@ -110,58 +113,72 @@ function ObraDetallePage({ obra, onBack }) {
 
   if (!obra) {
     return (
-      <div className="page-card">
-        <h2>No hay obra seleccionada</h2>
-        <button className="btn-secondary" onClick={onBack}>
-          ← Volver
-        </button>
+      <div>
+        <PageHeader
+          eyebrow="Obra"
+          title="No hay obra seleccionada"
+          description="Vuelve al listado y selecciona una obra para continuar."
+          action={
+            <Button variant="secondary" onClick={onBack}>
+              ← Volver
+            </Button>
+          }
+        />
       </div>
     );
   }
 
   return (
     <div className="obra-detalle-page">
-      <div className="page-card">
-        <button className="btn-secondary" onClick={onBack}>
-          ← Volver a obras
-        </button>
+      <PageHeader
+        eyebrow="Detalle de obra"
+        title={obra.nombre}
+        description="Administra la configuración técnica, tableros y cálculos derivados de esta obra."
+        action={
+          <Button variant="secondary" onClick={onBack}>
+            ← Volver a obras
+          </Button>
+        }
+      />
 
-        <div className="obra-header">
-          <div>
-            <p className="eyebrow">Detalle de obra</p>
-            <h2>{obra.nombre}</h2>
-          </div>
-        </div>
+      <section className="obra-summary-grid">
+        <article className="obra-summary-card blue">
+          <span>Contacto</span>
+          <strong>{obra.nombre_contacto || "-"}</strong>
+          <p>Responsable o solicitante de la obra</p>
+        </article>
 
-        <div className="obra-info-grid">
-          <div>
-            <span>Contacto</span>
-            <strong>{obra.nombre_contacto || "-"}</strong>
-          </div>
+        <article className="obra-summary-card green">
+          <span>Teléfono</span>
+          <strong>{obra.telefono_contacto || "-"}</strong>
+          <p>Dato de comunicación principal</p>
+        </article>
 
-          <div>
-            <span>Teléfono</span>
-            <strong>{obra.telefono_contacto || "-"}</strong>
-          </div>
+        <article className="obra-summary-card orange">
+          <span>Email</span>
+          <strong>{obra.email_contacto || "-"}</strong>
+          <p>Correo asociado al contacto</p>
+        </article>
 
-          <div>
-            <span>Email</span>
-            <strong>{obra.email_contacto || "-"}</strong>
-          </div>
+        <article className="obra-summary-card purple">
+          <span>Ubicación</span>
+          <strong>{obra.ubicacion || "-"}</strong>
+          <p>Dirección o referencia de la obra</p>
+        </article>
+      </section>
 
-          <div>
-            <span>Ubicación</span>
-            <strong>{obra.ubicacion || "-"}</strong>
-          </div>
-        </div>
-      </div>
-
-      <div className="page-card">
-        <div className="section-header">
+      <section className="page-card tablero-workspace">
+        <div className="workspace-header">
           <div>
             <p className="eyebrow">Configuración</p>
             <h2>Tableros</h2>
+            <p>
+              Crea tableros manualmente o reutiliza la configuración técnica del
+              último tablero cargado.
+            </p>
           </div>
+
+          <div className="workspace-badge">{tableros.length} tableros</div>
         </div>
 
         <TableroForm
@@ -195,13 +212,21 @@ function ObraDetallePage({ obra, onBack }) {
           onPrecargar={handleNuevoConAnterior}
         />
 
-        <TablerosList
-          tableros={tableros}
-          onVerCircuitos={setTableroSeleccionado}
-        />
+        {tableros.length === 0 ? (
+          <EmptyState
+            title="No hay tableros cargados"
+            description="Crea el primer tablero de esta obra para comenzar con la configuración técnica."
+          />
+        ) : (
+          <TablerosList
+            tableros={tableros}
+            tableroSeleccionado={tableroSeleccionado}
+            onVerCircuitos={setTableroSeleccionado}
+          />
+        )}
+      </section>
 
-        <TableroDetalle tablero={tableroSeleccionado} />
-      </div>
+      <TableroDetalle tablero={tableroSeleccionado} />
     </div>
   );
 }

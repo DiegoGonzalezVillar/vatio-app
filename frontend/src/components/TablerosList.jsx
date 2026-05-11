@@ -1,25 +1,65 @@
-function TablerosList({ tableros, onVerCircuitos }) {
+function TablerosList({ tableros, onVerCircuitos, tableroSeleccionado }) {
   return (
-    <div className="tableros-list">
-      {tableros.map((tablero) => (
-        <div className="tablero-card" key={tablero.id}>
-          <h3>{tablero.nombre}</h3>
+    <div className="tableros-grid">
+      {tableros.map((tablero, index) => {
+        const colors = ["blue", "green", "orange", "purple"];
+        const color = colors[index % colors.length];
 
-          <p>Altura local: {tablero.altura_local || "-"}</p>
-          <p>Altura tablero: {tablero.altura_tablero || "-"}</p>
-          <p>Altura toma: {tablero.altura_toma || "-"}</p>
-          <p>Altura llave: {tablero.altura_llave_luz || "-"}</p>
+        const activo = tableroSeleccionado?.id === tablero.id;
 
-          <div className="button-row">
+        return (
+          <article
+            key={tablero.id}
+            className={`
+              tablero-modern-card
+              ${activo ? "active" : ""}
+            `}
+          >
+            <div className="tablero-modern-top">
+              <div>
+                <p className={`obra-label ${color}`}>Tablero #{tablero.id}</p>
+
+                <h3>{tablero.nombre}</h3>
+              </div>
+
+              <div className={`tablero-status ${color}`}>Activo</div>
+            </div>
+
+            <div className="tablero-modern-info">
+              <p>
+                <span>Altura tablero</span>
+
+                <strong>{tablero.altura_tablero || "-"}</strong>
+              </p>
+
+              <p>
+                <span>Altura toma</span>
+
+                <strong>{tablero.altura_toma || "-"}</strong>
+              </p>
+
+              <p>
+                <span>Llave luz</span>
+
+                <strong>{tablero.altura_llave_luz || "-"}</strong>
+              </p>
+
+              <p>
+                <span>Altura brazo</span>
+
+                <strong>{tablero.altura_brazo || "-"}</strong>
+              </p>
+            </div>
+
             <button
-              className="btn-primary"
+              className={`open-mini-btn ${color}`}
               onClick={() => onVerCircuitos(tablero)}
             >
-              Abrir tablero
+              → Ver detalle
             </button>
-          </div>
-        </div>
-      ))}
+          </article>
+        );
+      })}
     </div>
   );
 }
