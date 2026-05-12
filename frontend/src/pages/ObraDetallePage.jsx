@@ -9,6 +9,8 @@ import Button from "../components/ui/Button";
 import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/ui/EmptyState";
 
+import CollapsibleSection from "../components/ui/CollapsibleSection";
+
 function ObraDetallePage({ obra, onBack }) {
   const [tableros, setTableros] = useState([]);
   const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
@@ -167,20 +169,11 @@ function ObraDetallePage({ obra, onBack }) {
         </article>
       </section>
 
-      <section className="page-card tablero-workspace">
-        <div className="workspace-header">
-          <div>
-            <p className="eyebrow">Configuración</p>
-            <h2>Tableros</h2>
-            <p>
-              Crea tableros manualmente o reutiliza la configuración técnica del
-              último tablero cargado.
-            </p>
-          </div>
-
-          <div className="workspace-badge">{tableros.length} tableros</div>
-        </div>
-
+      <CollapsibleSection
+        eyebrow="Configuración"
+        title="Crear tablero"
+        defaultOpen={true}
+      >
         <TableroForm
           nombreTablero={nombreTablero}
           setNombreTablero={setNombreTablero}
@@ -211,7 +204,16 @@ function ObraDetallePage({ obra, onBack }) {
           onCrear={handleCrearTablero}
           onPrecargar={handleNuevoConAnterior}
         />
+      </CollapsibleSection>
 
+      <CollapsibleSection
+        eyebrow="Listado"
+        title="Tableros creados"
+        defaultOpen={true}
+        rightContent={
+          <div className="workspace-badge">{tableros.length} tableros</div>
+        }
+      >
         {tableros.length === 0 ? (
           <EmptyState
             title="No hay tableros cargados"
@@ -224,9 +226,17 @@ function ObraDetallePage({ obra, onBack }) {
             onVerCircuitos={setTableroSeleccionado}
           />
         )}
-      </section>
+      </CollapsibleSection>
 
-      <TableroDetalle tablero={tableroSeleccionado} />
+      {tableroSeleccionado && (
+        <CollapsibleSection
+          eyebrow="Detalle técnico"
+          title={`Detalle de ${tableroSeleccionado.nombre}`}
+          defaultOpen={true}
+        >
+          <TableroDetalle tablero={tableroSeleccionado} />
+        </CollapsibleSection>
+      )}
     </div>
   );
 }

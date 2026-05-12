@@ -1454,3 +1454,54 @@ textarea:focus {
   height: 24px;
   object-fit: contain;
 }
+
+.collapsible-section {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.collapsible-header {
+  width: 100%;
+  background: #f8fafc;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+
+.collapsible-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.collapsible-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.collapse-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  transition: 0.2s;
+}
+
+.collapse-icon.open {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  padding: 24px;
+}
