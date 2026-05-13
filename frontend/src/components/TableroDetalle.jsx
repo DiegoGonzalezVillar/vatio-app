@@ -1,6 +1,10 @@
-import { calcularDatosTablero } from "../utils/calculosTablero";
+import { useState } from "react";
+import { calcularDatosTablero } from "../utils/calculosDatosTablero";
+import CircuitosElectricosPanel from "./circuitos/CircuitosElectricosPanel";
 
 function TableroDetalle({ tablero }) {
+  const [moduloAbierto, setModuloAbierto] = useState(null);
+
   if (!tablero) {
     return null;
   }
@@ -14,63 +18,54 @@ function TableroDetalle({ tablero }) {
       color: "blue",
       icon: "↓",
     },
-
     {
       label: "Bajada toma",
       value: datosCalculados.bajada_toma,
       color: "green",
       icon: "⚡",
     },
-
     {
       label: "Bajada tablero",
       value: datosCalculados.bajada_tablero,
       color: "orange",
       icon: "▦",
     },
-
     {
       label: "Bajada brazo",
       value: datosCalculados.bajada_brazo,
       color: "purple",
       icon: "↕",
     },
-
     {
       label: "Bajada especial",
       value: datosCalculados.bajada_especial,
       color: "blue",
       icon: "◎",
     },
-
     {
       label: "Total tablero",
       value: datosCalculados.total_tablero,
       color: "green",
       icon: "◩",
     },
-
     {
       label: "Total caja honda",
       value: datosCalculados.total_caja_honda,
       color: "orange",
       icon: "◫",
     },
-
     {
       label: "Total caja centro",
       value: datosCalculados.total_caja_centro,
       color: "purple",
       icon: "✦",
     },
-
     {
       label: "Total caja brazo",
       value: datosCalculados.total_caja_brazo,
       color: "blue",
       icon: "▤",
     },
-
     {
       label: "Total h especial",
       value: datosCalculados.total_h_especial,
@@ -81,34 +76,35 @@ function TableroDetalle({ tablero }) {
 
   const modulos = [
     {
+      id: "circuitos",
       title: "Circuitos",
       description: "Gestión y cálculo de circuitos eléctricos.",
       icon: "⚡",
       color: "blue",
     },
-
     {
+      id: "bandejas",
       title: "Bandejas",
       description: "Distribución y recorrido de bandejas.",
       icon: "▤",
       color: "green",
     },
-
     {
+      id: "canerias",
       title: "Cañerías",
       description: "Canalizaciones y conexiones técnicas.",
       icon: "◫",
       color: "orange",
     },
-
     {
+      id: "iluminacion",
       title: "Iluminación",
       description: "Configuración de luminarias y alturas.",
       icon: "✦",
       color: "purple",
     },
-
     {
+      id: "materiales",
       title: "Materiales",
       description: "Consolidado técnico y metrados.",
       icon: "◩",
@@ -145,12 +141,7 @@ function TableroDetalle({ tablero }) {
         <div className="detalle-kpis-grid">
           {calculos.map((item) => (
             <article key={item.label} className="detalle-kpi-card">
-              <div
-                className={`
-                  detalle-kpi-icon
-                  ${item.color}
-                `}
-              >
+              <div className={`detalle-kpi-icon ${item.color}`}>
                 {item.icon}
               </div>
 
@@ -173,13 +164,8 @@ function TableroDetalle({ tablero }) {
 
         <div className="detalle-modulos-grid">
           {modulos.map((modulo) => (
-            <article key={modulo.title} className="detalle-modulo-card">
-              <div
-                className={`
-                  detalle-modulo-icon
-                  ${modulo.color}
-                `}
-              >
+            <article key={modulo.id} className="detalle-modulo-card">
+              <div className={`detalle-modulo-icon ${modulo.color}`}>
                 {modulo.icon}
               </div>
 
@@ -188,16 +174,39 @@ function TableroDetalle({ tablero }) {
               <p>{modulo.description}</p>
 
               <button
-                className={`
-                  open-mini-btn
-                  ${modulo.color}
-                `}
+                className={`open-mini-btn ${modulo.color}`}
+                type="button"
+                onClick={() =>
+                  setModuloAbierto((actual) =>
+                    actual === modulo.id ? null : modulo.id,
+                  )
+                }
               >
-                → Abrir módulo
+                {moduloAbierto === modulo.id
+                  ? "Cerrar módulo"
+                  : "→ Abrir módulo"}
               </button>
             </article>
           ))}
         </div>
+
+        {moduloAbierto === "circuitos" && (
+          <CircuitosElectricosPanel
+            obraId={tablero.obra_id}
+            tablero={tablero}
+          />
+        )}
+
+        {moduloAbierto && moduloAbierto !== "circuitos" && (
+          <div className="page-card" style={{ marginTop: "20px" }}>
+            <p className="eyebrow">Módulo en preparación</p>
+            <h3>Próximamente</h3>
+            <p>
+              Este módulo todavía no está conectado. Primero estamos dejando
+              funcionando Circuitos eléctricos.
+            </p>
+          </div>
+        )}
       </section>
     </section>
   );

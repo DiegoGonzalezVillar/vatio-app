@@ -39,3 +39,87 @@ export const getLastTablero = async (obraId) => {
 
   return res.json();
 };
+
+export async function updateObra(id, data) {
+  const response = await fetch(`${API_URL}/obras/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo modificar la obra");
+  }
+
+  return response.json();
+}
+
+export async function deleteObra(id) {
+  const response = await fetch(`${API_URL}/obras/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo eliminar la obra");
+  }
+
+  return response.json();
+}
+
+export async function getCircuitosElectricosByTablero(tableroId) {
+  const res = await fetch(
+    `${API_URL}/circuitos-electricos/tablero/${tableroId}`,
+  );
+
+  if (!res.ok) {
+    throw new Error("No se pudieron cargar los circuitos eléctricos");
+  }
+
+  return res.json();
+}
+
+export async function createCircuitoElectrico(data) {
+  const res = await fetch(`${API_URL}/circuitos-electricos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("No se pudo crear el circuito eléctrico");
+  }
+
+  return res.json();
+}
+
+export async function updateCircuitoElectrico(id, data) {
+  const res = await fetch(`${API_URL}/circuitos-electricos/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("No se pudo modificar el circuito eléctrico");
+  }
+
+  return res.json();
+}
+
+export async function deleteCircuitoElectrico(id) {
+  const res = await fetch(`${API_URL}/circuitos-electricos/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("No se pudo eliminar el circuito eléctrico");
+  }
+
+  return res.json();
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getObras } from "../services/api";
+import { getObras, deleteObra } from "../services/api";
 import Button from "../components/ui/Button";
 import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/ui/EmptyState";
@@ -7,19 +7,41 @@ import EmptyState from "../components/ui/EmptyState";
 function ObrasPage({ onBack, onVerObra }) {
   const [obras, setObras] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     async function cargarObras() {
-      const data = await getObras();
-      setObras(data);
+      try {
+        const data = await getObras();
+        setObras(data);
+      } catch (error) {
+        console.error(error);
+        alert("No se pudieron cargar las obras.");
+      } finally {
+        setCargando(false);
+      }
     }
 
     cargarObras();
   }, []);
 
   const obrasFiltradas = obras.filter((obra) =>
-    obra.nombre.toLowerCase().includes(busqueda.toLowerCase()),
+    obra.nombre?.toLowerCase().includes(busqueda.toLowerCase()),
   );
+
+  const handleEliminarObra = async (obraId) => {
+    const confirmar = window.confirm("¿Seguro que querés eliminar esta obra?");
+
+    if (!confirmar) return;
+
+    try {
+      await deleteObra(obraId);
+      setObras((prev) => prev.filter((obra) => obra.id !== obraId));
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo eliminar la obra.");
+    }
+  };
 
   return (
     <div>
@@ -28,9 +50,20 @@ function ObrasPage({ onBack, onVerObra }) {
         title="Obras"
         description="Administra las obras cargadas y accede al detalle técnico de cada una."
         action={
-          <Button variant="secondary" onClick={onBack}>
-            ← Volver
-          </Button>
+          <div style={{ display: "flex", gap: "12px" }}>
+            <Button
+              variant="primary"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("go-create-obra"))
+              }
+            >
+              + Nueva obra
+            </Button>
+
+            <Button variant="secondary" onClick={onBack}>
+              ← Volver
+            </Button>
+          </div>
         }
       />
 
@@ -51,7 +84,12 @@ function ObrasPage({ onBack, onVerObra }) {
           </div>
         </div>
 
-        {obrasFiltradas.length === 0 ? (
+        {cargando ? (
+          <EmptyState
+            title="Cargando obras..."
+            description="Estamos obteniendo la información de la base de datos."
+          />
+        ) : obrasFiltradas.length === 0 ? (
           <EmptyState
             title="No se encontraron obras"
             description="Prueba con otro nombre o carga una nueva obra."
@@ -71,6 +109,11 @@ function ObrasPage({ onBack, onVerObra }) {
 
                   <div className="obra-card-meta">
                     <p>
+                      <span>Tipo:</span>
+                      <strong>{obra.tipo_obra || "-"}</strong>
+                    </p>
+
+                    <p>
                       <span>Contacto:</span>
                       <strong>{obra.nombre_contacto || "-"}</strong>
                     </p>
@@ -86,12 +129,27 @@ function ObrasPage({ onBack, onVerObra }) {
                     </p>
                   </div>
 
-                  <button
-                    className={`open-mini-btn ${color}`}
-                    onClick={() => onVerObra(obra)}
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "16px",
+                    }}
                   >
-                    → Ver / modificar
-                  </button>
+                    <button
+                      className={`open-mini-btn ${color}`}
+                      onClick={() => onVerObra(obra)}
+                    >
+                      → Ver / modificar
+                    </button>
+
+                    <Button
+                      variant="danger"
+                      onClick={() => handleEliminarObra(obra.id)}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
                 </article>
               );
             })}

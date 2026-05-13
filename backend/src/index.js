@@ -3,6 +3,7 @@ import cors from "cors";
 import { pool } from "./db.js";
 import obrasRoutes from "./routes/obras.routes.js";
 import tablerosRoutes from "./routes/tableros.routes.js";
+import circuitosElectricosRoutes from "./routes/circuitosElectricos.routes.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.get("/test-db", async (req, res) => {
 // ROUTES
 app.use("/api/obras", obrasRoutes);
 app.use("/api/tableros", tablerosRoutes);
+app.use("/api/circuitos-electricos", circuitosElectricosRoutes);
 
 // SERVER
 app.listen(3000, () => {
