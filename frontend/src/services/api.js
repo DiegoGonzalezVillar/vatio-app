@@ -68,6 +68,34 @@ export async function deleteObra(id) {
   return response.json();
 }
 
+export async function deleteTablero(id) {
+  const response = await fetch(`${API_URL}/tableros/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al eliminar tablero");
+  }
+
+  return true;
+}
+
+export async function updateTablero(id, data) {
+  const response = await fetch(`${API_URL}/tableros/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al modificar tablero");
+  }
+
+  return response.json();
+}
+
 export async function getCircuitosElectricosByTablero(tableroId) {
   const res = await fetch(
     `${API_URL}/circuitos-electricos/tablero/${tableroId}`,

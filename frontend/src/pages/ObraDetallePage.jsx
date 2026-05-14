@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { getTableros, createTablero, getLastTablero } from "../services/api";
+import {
+  getTableros,
+  createTablero,
+  updateTablero,
+  getLastTablero,
+} from "../services/api";
+
+import toast from "react-hot-toast";
 
 import TableroForm from "../components/TableroForm";
 import TablerosList from "../components/TablerosList";
@@ -8,12 +15,12 @@ import TableroDetalle from "../components/TableroDetalle";
 import Button from "../components/ui/Button";
 import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/ui/EmptyState";
-
 import CollapsibleSection from "../components/ui/CollapsibleSection";
 
 function ObraDetallePage({ obra, onBack }) {
   const [tableros, setTableros] = useState([]);
   const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
+  const [tableroEditando, setTableroEditando] = useState(null);
 
   const [nombreTablero, setNombreTablero] = useState("");
   const [alturaLocal, setAlturaLocal] = useState("");
@@ -32,20 +39,34 @@ function ObraDetallePage({ obra, onBack }) {
   useEffect(() => {
     if (!obra?.id) return;
 
+    let activo = true;
+
     async function cargarTablerosIniciales() {
       const data = await getTableros(obra.id);
-      setTableros(data);
+
+      if (activo) {
+        setTableros(data);
+        setTableroSeleccionado(null);
+        setTableroEditando(null);
+      }
     }
 
     cargarTablerosIniciales();
-  }, [obra]);
+
+    return () => {
+      activo = false;
+    };
+  }, [obra?.id]);
 
   const cargarTableros = async () => {
+    if (!obra?.id) return;
+
     const data = await getTableros(obra.id);
     setTableros(data);
   };
 
   const limpiarFormularioTablero = () => {
+    setTableroEditando(null);
     setNombreTablero("");
     setAlturaLocal("");
     setAlturaLlaveLuz("");
@@ -61,15 +82,32 @@ function ObraDetallePage({ obra, onBack }) {
     setTipoTableroId(1);
   };
 
+  const handleEditarTablero = (tablero) => {
+    setTableroEditando(tablero);
+
+    setNombreTablero(tablero.nombre || "");
+    setAlturaLocal(tablero.altura_local || "");
+    setAlturaLlaveLuz(tablero.altura_llave_luz || "");
+    setAlturaToma(tablero.altura_toma || "");
+    setAlturaTablero(tablero.altura_tablero || "");
+    setAgregadoTablero(tablero.agregado_tablero || "");
+    setAlturaBrazo(tablero.altura_brazo || "");
+    setAlturaEspecial(tablero.altura_especial || "");
+    setAgregadoCajaHonda(tablero.agregado_caja_honda || "");
+    setAgregadoCajaCentro(tablero.agregado_caja_centro || "");
+    setAgregadoCajaBrazo(tablero.agregado_caja_brazo || "");
+    setAgregadoHEspecial(tablero.agregado_h_especial || "");
+    setTipoTableroId(tablero.tipo_tablero_id || 1);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleCrearTablero = async (e) => {
     e.preventDefault();
 
-    if (!nombreTablero.trim()) {
-      alert("Ingrese el nombre del tablero");
-      return;
-    }
+    if (!nombreTablero.trim()) return;
 
-    await createTablero({
+    const payload = {
       obra_id: Number(obra.id),
       nombre: nombreTablero,
       tipo_tablero_id: Number(tipoTableroId),
@@ -84,10 +122,23 @@ function ObraDetallePage({ obra, onBack }) {
       agregado_caja_centro: agregadoCajaCentro,
       agregado_caja_brazo: agregadoCajaBrazo,
       agregado_h_especial: agregadoHEspecial,
-    });
+    };
 
-    limpiarFormularioTablero();
-    cargarTableros();
+    try {
+      if (tableroEditando) {
+        await updateTablero(tableroEditando.id, payload);
+        toast.success("Tablero actualizado correctamente");
+      } else {
+        await createTablero(payload);
+        toast.success("Tablero creado correctamente");
+      }
+
+      limpiarFormularioTablero();
+      await cargarTableros();
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo guardar el tablero");
+    }
   };
 
   const handleNuevoConAnterior = async () => {
@@ -98,6 +149,7 @@ function ObraDetallePage({ obra, onBack }) {
       return;
     }
 
+    setTableroEditando(null);
     setNombreTablero("");
     setAlturaLocal(ultimo.altura_local || "");
     setAlturaLlaveLuz(ultimo.altura_llave_luz || "");
@@ -171,7 +223,7 @@ function ObraDetallePage({ obra, onBack }) {
 
       <CollapsibleSection
         eyebrow="Configuración"
-        title="Crear tablero"
+        title={tableroEditando ? "Modificar tablero" : "Crear tablero"}
         defaultOpen={true}
       >
         <TableroForm
@@ -203,6 +255,8 @@ function ObraDetallePage({ obra, onBack }) {
           setTipoTableroId={setTipoTableroId}
           onCrear={handleCrearTablero}
           onPrecargar={handleNuevoConAnterior}
+          modo={tableroEditando ? "editar" : "crear"}
+          onCancelarEdicion={limpiarFormularioTablero}
         />
       </CollapsibleSection>
 
@@ -224,6 +278,22 @@ function ObraDetallePage({ obra, onBack }) {
             tableros={tableros}
             tableroSeleccionado={tableroSeleccionado}
             onVerCircuitos={setTableroSeleccionado}
+            onEditarTablero={handleEditarTablero}
+            onTableroEliminado={(tableroId) => {
+              setTableros((prev) =>
+                prev.filter(
+                  (tablero) => Number(tablero.id) !== Number(tableroId),
+                ),
+              );
+
+              if (Number(tableroSeleccionado?.id) === Number(tableroId)) {
+                setTableroSeleccionado(null);
+              }
+
+              if (Number(tableroEditando?.id) === Number(tableroId)) {
+                limpiarFormularioTablero();
+              }
+            }}
           />
         )}
       </CollapsibleSection>

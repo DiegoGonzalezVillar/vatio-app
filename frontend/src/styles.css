@@ -2239,3 +2239,88 @@ display: block;
     justify-self: start;
   }
 }
+
+.tablero-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.mini-secondary-btn {
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.mini-danger-btn {
+  border: 0;
+  background: #c91f37;
+  color: white;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+}
+
+.confirm-modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+
+  background: white;
+  border-radius: 22px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.25);
+
+  animation: modalFadeIn 0.2s ease;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+
+.confirm-modal p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 24px;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
