@@ -8,6 +8,7 @@ import CrearObraPage from "./pages/CrearObraPage";
 function App() {
   const [page, setPage] = useState("home");
   const [obraSeleccionada, setObraSeleccionada] = useState(null);
+  const [obraEditando, setObraEditando] = useState(null);
 
   useEffect(() => {
     const handler = () => setPage("crear-obra");
@@ -22,6 +23,10 @@ function App() {
   const irADetalleObra = (obra) => {
     setObraSeleccionada(obra);
     setPage("obra-detalle");
+  };
+  const irAEditarObra = (obra) => {
+    setObraEditando(obra);
+    setPage("editar-obra");
   };
 
   return (
@@ -40,13 +45,25 @@ function App() {
       )}
 
       {page === "obras" && (
-        <ObrasPage onBack={() => setPage("home")} onVerObra={irADetalleObra} />
+        <ObrasPage
+          onBack={() => setPage("home")}
+          onVerObra={irADetalleObra}
+          onEditarObra={irAEditarObra}
+        />
       )}
 
       {page === "obra-detalle" && (
         <ObraDetallePage
           obra={obraSeleccionada}
           onBack={() => setPage("obras")}
+        />
+      )}
+      {page === "editar-obra" && (
+        <CrearObraPage
+          modo="editar"
+          obraInicial={obraEditando}
+          onBack={() => setPage("obras")}
+          onVerObra={irADetalleObra}
         />
       )}
     </DashboardLayout>

@@ -195,6 +195,83 @@ function ObraDetallePage({ obra, onBack }) {
         }
       />
 
+      <CollapsibleSection
+        eyebrow="Datos generales"
+        title="Información de la obra"
+        defaultOpen={true}
+      >
+        <div className="obra-card-meta">
+          <p>
+            <span>Nombre:</span>
+            <strong>{obra.nombre || "-"}</strong>
+          </p>
+          <p>
+            <span>Tipo:</span>
+            <strong>{obra.tipo_obra || "-"}</strong>
+          </p>
+          <p>
+            <span>Metros²:</span>
+            <strong>{obra.metros2 || "-"}</strong>
+          </p>
+          <p>
+            <span>Potencia:</span>
+            <strong>{obra.potencia || "-"}</strong>
+          </p>
+          <p>
+            <span>Contacto:</span>
+            <strong>{obra.nombre_contacto || "-"}</strong>
+          </p>
+          <p>
+            <span>Teléfono:</span>
+            <strong>{obra.telefono_contacto || "-"}</strong>
+          </p>
+          <p>
+            <span>Email:</span>
+            <strong>{obra.email_contacto || "-"}</strong>
+          </p>
+          <p>
+            <span>Ubicación:</span>
+            <strong>{obra.ubicacion || "-"}</strong>
+          </p>
+          <p>
+            <span>Empresa:</span>
+            <strong>{obra.empresa_solicitante || "-"}</strong>
+          </p>
+          <p>
+            <span>Estado:</span>
+            <strong>{obra.estado_obra || "-"}</strong>
+          </p>
+          <p>
+            <span>Archivos:</span>
+            <strong>{obra.archivos_recibidos || "-"}</strong>
+          </p>
+          <p>
+            <span>Fecha solicitud:</span>
+            <strong>{obra.fecha_solicitud?.slice(0, 10) || "-"}</strong>
+          </p>
+          <p>
+            <span>Fecha entrega:</span>
+            <strong>{obra.fecha_entrega?.slice(0, 10) || "-"}</strong>
+          </p>
+          <p>
+            <span>Fecha presupuesto:</span>
+            <strong>{obra.fecha_presupuesto?.slice(0, 10) || "-"}</strong>
+          </p>
+          <p>
+            <span>Fecha entregado:</span>
+            <strong>{obra.fecha_entregado?.slice(0, 10) || "-"}</strong>
+          </p>
+          <p>
+            <span>Observación prórroga:</span>
+            <strong>{obra.observacion_prorroga || "-"}</strong>
+          </p>
+          <p>
+            <span>Notas:</span>
+            <strong>{obra.notas_generales || "-"}</strong>
+          </p>
+        </div>
+      </CollapsibleSection>
+
       <section className="obra-summary-grid">
         <article className="obra-summary-card blue">
           <span>Contacto</span>

@@ -30,7 +30,14 @@ export const calcularCircuitoElectrico = (circuito = {}, datosTablero = {}) => {
   const agregadoToma = toNumber(datosTablero.agregado_toma);
   const agregadoLlaveLuz = toNumber(datosTablero.agregado_llave_luz);
   const agregadoTablero = toNumber(datosTablero.agregado_tablero);
-  const extraVigas = toNumber(datosTablero.extra_altura_vigas);
+
+  const agregadoCajaHonda = toNumber(datosTablero.agregado_caja_honda);
+  const agregadoCajaCentro = toNumber(datosTablero.agregado_caja_centro);
+  const agregadoCajaBrazo = toNumber(datosTablero.agregado_caja_brazo);
+
+  const extraVigas = toNumber(
+    datosTablero.extra_altura_vigas ?? datosTablero.extra_por_vigas,
+  );
 
   const totalBajadaTomas = bajadaTomas * bajadaToma;
   const totalBajadaLuces = bajadaLuces * bajadaLlaveLuz;
@@ -42,8 +49,8 @@ export const calcularCircuitoElectrico = (circuito = {}, datosTablero = {}) => {
     bajadaLuces * extraVigas;
 
   const totalCanoPared =
-    bajadaTomas * (bajadaToma - extraVigas) +
-    bajadaLuces * (bajadaLlaveLuz - extraVigas) +
+    bajadaTomas * Math.max(bajadaToma - extraVigas, 0) +
+    bajadaLuces * Math.max(bajadaLlaveLuz - extraVigas, 0) +
     metrosPared +
     bajadaTablero;
 
@@ -51,11 +58,12 @@ export const calcularCircuitoElectrico = (circuito = {}, datosTablero = {}) => {
     xBandeja +
     metrosLosa +
     metrosPared +
-    (cajaPiso + cajaHonda) * agregadoToma +
+    cajaPiso * agregadoToma +
+    cajaHonda * agregadoCajaHonda +
     bajadaTomas * bajadaToma +
     cajaLlana * agregadoLlaveLuz +
-    centro * agregadoLlaveLuz +
-    brazo * agregadoLlaveLuz +
+    centro * agregadoCajaCentro +
+    brazo * agregadoCajaBrazo +
     bajadaLuces * bajadaLlaveLuz +
     agregadoTablero +
     bajadaTablero;

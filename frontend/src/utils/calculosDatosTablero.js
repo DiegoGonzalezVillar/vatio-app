@@ -15,11 +15,16 @@ export const calcularDatosTablero = (tablero = {}) => {
   const alturaBrazo = toNumber(tablero.altura_brazo);
   const alturaEspecial = toNumber(tablero.altura_especial);
 
+  const agregadoLlaveLuz = toNumber(tablero.agregado_llave_luz);
+  const agregadoToma = toNumber(tablero.agregado_toma);
   const agregadoTablero = toNumber(tablero.agregado_tablero);
   const agregadoCajaHonda = toNumber(tablero.agregado_caja_honda);
   const agregadoCajaCentro = toNumber(tablero.agregado_caja_centro);
   const agregadoCajaBrazo = toNumber(tablero.agregado_caja_brazo);
   const agregadoHEspecial = toNumber(tablero.agregado_h_especial);
+  const extraAlturaVigas = toNumber(
+    tablero.extra_altura_vigas || tablero.extra_por_vigas,
+  );
 
   const bajadaLlaveLuz = alturaLocal - alturaLlaveLuz;
   const bajadaToma = alturaLocal - alturaToma;
@@ -33,6 +38,15 @@ export const calcularDatosTablero = (tablero = {}) => {
     bajada_tablero: redondear(bajadaTablero),
     bajada_brazo: redondear(bajadaBrazo),
     bajada_especial: redondear(bajadaEspecial),
+
+    agregado_llave_luz: agregadoLlaveLuz,
+    agregado_toma: agregadoToma,
+    agregado_tablero: agregadoTablero,
+    agregado_caja_honda: agregadoCajaHonda,
+    agregado_caja_centro: agregadoCajaCentro,
+    agregado_caja_brazo: agregadoCajaBrazo,
+    agregado_h_especial: agregadoHEspecial,
+    extra_altura_vigas: extraAlturaVigas,
 
     total_tablero: redondear(bajadaTablero + agregadoTablero),
     total_caja_honda: redondear(bajadaToma + agregadoCajaHonda),

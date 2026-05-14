@@ -4,7 +4,7 @@ import Button from "../components/ui/Button";
 import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/ui/EmptyState";
 
-function ObrasPage({ onBack, onVerObra }) {
+function ObrasPage({ onBack, onVerObra, onEditarObra }) {
   const [obras, setObras] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -112,20 +112,53 @@ function ObrasPage({ onBack, onVerObra }) {
                       <span>Tipo:</span>
                       <strong>{obra.tipo_obra || "-"}</strong>
                     </p>
-
+                    <p>
+                      <span>Metros²:</span>
+                      <strong>{obra.metros2 || "-"}</strong>
+                    </p>
+                    <p>
+                      <span>Potencia:</span>
+                      <strong>{obra.potencia || "-"}</strong>
+                    </p>
                     <p>
                       <span>Contacto:</span>
                       <strong>{obra.nombre_contacto || "-"}</strong>
                     </p>
-
+                    <p>
+                      <span>Teléfono:</span>
+                      <strong>{obra.telefono_contacto || "-"}</strong>
+                    </p>
+                    <p>
+                      <span>Email:</span>
+                      <strong>{obra.email_contacto || "-"}</strong>
+                    </p>
                     <p>
                       <span>Ubicación:</span>
                       <strong>{obra.ubicacion || "-"}</strong>
                     </p>
-
                     <p>
-                      <span>Teléfono:</span>
-                      <strong>{obra.telefono_contacto || "-"}</strong>
+                      <span>Empresa:</span>
+                      <strong>{obra.empresa_solicitante || "-"}</strong>
+                    </p>
+                    <p>
+                      <span>Estado:</span>
+                      <strong>{obra.estado_obra || "-"}</strong>
+                    </p>
+                    <p>
+                      <span>Solicitud:</span>
+                      <strong>
+                        {obra.fecha_solicitud?.slice(0, 10) || "-"}
+                      </strong>
+                    </p>
+                    <p>
+                      <span>Entrega:</span>
+                      <strong>{obra.fecha_entrega?.slice(0, 10) || "-"}</strong>
+                    </p>
+                    <p>
+                      <span>Presupuesto:</span>
+                      <strong>
+                        {obra.fecha_presupuesto?.slice(0, 10) || "-"}
+                      </strong>
                     </p>
                   </div>
 
@@ -140,7 +173,14 @@ function ObrasPage({ onBack, onVerObra }) {
                       className={`open-mini-btn ${color}`}
                       onClick={() => onVerObra(obra)}
                     >
-                      → Ver / modificar
+                      → Ver obra
+                    </button>
+
+                    <button
+                      className="open-mini-btn"
+                      onClick={() => onEditarObra(obra)}
+                    >
+                      ✎ Modificar
                     </button>
 
                     <Button
