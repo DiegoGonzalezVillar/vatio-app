@@ -7,6 +7,9 @@ import {
   deleteCircuitoElectrico,
 } from "../../services/api";
 
+import { calcularDatosTablero } from "../../utils/calculosDatosTablero";
+import { calcularCircuitoElectrico } from "../../utils/calcularCircuitoElectrico";
+
 const initialForm = {
   numero_circuito: "",
   conductores: "",
@@ -53,6 +56,47 @@ function CircuitosElectricosPanel({ obraId, tablero }) {
 
   const [accesorios, setAccesorios] = useState([]);
   const [terminaciones, setTerminaciones] = useState([]);
+
+  const cablePorBandeja = Number(form.metros_bandeja || 0);
+
+  const datosTablero = calcularDatosTablero(tablero);
+
+  const resumenCircuito = calcularCircuitoElectrico(
+    {
+      metros_bandeja: form.metros_bandeja,
+      metros_losa: form.metros_losa,
+      metros_saltos_pared: form.metros_saltos_pared,
+
+      caja_piso:
+        form.tipo_caja === "Caja Piso" ? Number(form.cantidad_cajas || 0) : 0,
+
+      caja_honda:
+        form.tipo_caja === "Caja Honda" ? Number(form.cantidad_cajas || 0) : 0,
+
+      caja_llana:
+        form.tipo_caja === "Caja Llana" ? Number(form.cantidad_cajas || 0) : 0,
+
+      centro:
+        form.tipo_caja === "Caja Centro" ? Number(form.cantidad_cajas || 0) : 0,
+
+      brazo:
+        form.tipo_caja === "Caja Brazo" ? Number(form.cantidad_cajas || 0) : 0,
+
+      bajada_tomas: bajadas
+        .filter((b) => b.bajada_a === "Toma")
+        .reduce((acc, b) => acc + Number(b.cantidad || 0), 0),
+
+      bajada_luces: bajadas
+        .filter((b) => b.bajada_a === "Llave")
+        .reduce((acc, b) => acc + Number(b.cantidad || 0), 0),
+
+      codos_especiales: bajadas.reduce(
+        (acc, b) => acc + Number(b.codos || 0),
+        0,
+      ),
+    },
+    datosTablero,
+  );
 
   const crearTerminacionVacia = () => ({
     id: crypto.randomUUID(),
@@ -921,42 +965,42 @@ function CircuitosElectricosPanel({ obraId, tablero }) {
           <div className="crear-obra-sidebar-list">
             <div className="summary-item">
               <small>Caño por Techo</small>
-              <strong>0,00</strong>
+              <strong>{resumenCircuito.total_cano_losa}</strong>
             </div>
 
             <div className="summary-item">
               <small>Caño por Pared</small>
-              <strong>0,00</strong>
-            </div>
-
-            <div className="summary-item">
-              <small>Caño por Piso</small>
-              <strong>0,00</strong>
+              <strong>{resumenCircuito.total_cano_pared}</strong>
             </div>
 
             <div className="summary-item">
               <small>Metros de Cable</small>
-              <strong>0,00</strong>
+              <strong>{resumenCircuito.total_cable}</strong>
             </div>
 
             <div className="summary-item">
               <small>Cable por Bandeja</small>
-              <strong>0,00</strong>
+              <strong>{cablePorBandeja}</strong>
             </div>
 
             <div className="summary-item">
               <small>Metros de Picada</small>
-              <strong>0,00</strong>
+              <strong>
+                {Number(
+                  resumenCircuito.total_bajada_tomas +
+                    resumenCircuito.total_bajada_luces,
+                )}
+              </strong>
             </div>
 
             <div className="summary-item">
               <small>Metros Picada por Yeso</small>
-              <strong>0,00</strong>
+              <strong>{resumenCircuito.total_bajada_luces}</strong>
             </div>
 
             <div className="summary-item">
               <small>Metros Picada por Zanja</small>
-              <strong>0,00</strong>
+              <strong>{resumenCircuito.total_bajada_tomas}</strong>
             </div>
           </div>
         </aside>
