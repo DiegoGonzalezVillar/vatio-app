@@ -20,14 +20,15 @@ export const createObra = async (req, res) => {
       telefono_contacto,
       email_contacto,
       ubicacion,
+      coeficiente_error_canalizaciones = 1.08,
     } = req.body;
 
     const result = await pool.query(
       `INSERT INTO obras 
-      (nombre, nombre_contacto, telefono_contacto, email_contacto, ubicacion) 
-      VALUES ($1, $2, $3, $4, $5)
+      (nombre, nombre_contacto, telefono_contacto, email_contacto, ubicacion, coeficiente_error_canalizaciones) 
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
-      [nombre, nombre_contacto, telefono_contacto, email_contacto, ubicacion],
+      [nombre, nombre_contacto, telefono_contacto, email_contacto, ubicacion, coeficiente_error_canalizaciones],
     );
 
     res.json(result.rows[0]);
@@ -46,6 +47,7 @@ export const updateObra = async (req, res) => {
       telefono_contacto,
       email_contacto,
       ubicacion,
+      coeficiente_error_canalizaciones = 1.08,
     } = req.body;
 
     const result = await pool.query(
@@ -55,8 +57,9 @@ export const updateObra = async (req, res) => {
         telefono_contacto = $3,
         email_contacto = $4,
         ubicacion = $5,
+        coeficiente_error_canalizaciones = $6,
         updated_at = CURRENT_TIMESTAMP
-      WHERE id = $6
+      WHERE id = $7
       RETURNING *`,
       [
         nombre,
@@ -64,6 +67,7 @@ export const updateObra = async (req, res) => {
         telefono_contacto,
         email_contacto,
         ubicacion,
+        coeficiente_error_canalizaciones,
         id,
       ],
     );

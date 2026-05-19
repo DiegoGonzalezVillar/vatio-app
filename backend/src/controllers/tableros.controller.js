@@ -35,6 +35,10 @@ export const createTablero = async (req, res) => {
       agregado_caja_centro,
       agregado_caja_brazo,
       agregado_h_especial,
+      extra_por_vigas,
+      cantidad_tableros,
+      cant_modulos,
+      precio_tablero_usd,
     } = req.body;
 
     const result = await pool.query(
@@ -52,9 +56,13 @@ export const createTablero = async (req, res) => {
         agregado_caja_honda,
         agregado_caja_centro,
         agregado_caja_brazo,
-        agregado_h_especial
+        agregado_h_especial,
+        extra_por_vigas,
+        cantidad_tableros,
+        cant_modulos,
+        precio_tablero_usd
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
       RETURNING *`,
       [
         obra_id,
@@ -71,6 +79,10 @@ export const createTablero = async (req, res) => {
         agregado_caja_centro || null,
         agregado_caja_brazo || null,
         agregado_h_especial || null,
+        extra_por_vigas || 0,
+        cantidad_tableros || 1,
+        cant_modulos || null,
+        precio_tablero_usd || 0,
       ],
     );
 

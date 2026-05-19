@@ -1,6 +1,6 @@
 import { calcularDatosTablero } from "../utils/calculosTablero";
 
-function TableroDetalle({ tablero }) {
+function TableroDetalle({ tablero, onOpenModule }) {
   if (!tablero) {
     return null;
   }
@@ -80,40 +80,13 @@ function TableroDetalle({ tablero }) {
   ];
 
   const modulos = [
-    {
-      title: "Circuitos",
-      description: "Gestión y cálculo de circuitos eléctricos.",
-      icon: "⚡",
-      color: "blue",
-    },
+    { title: "Circuitos eléctrica", description: "Metrado A1 por tablero.", icon: "⚡", color: "blue", module: "circuitos-electrica" },
+    { title: "Circuitos débiles", description: "Metrado B1 por tablero.", icon: "⌁", color: "green", module: "circuitos-debiles" },
 
-    {
-      title: "Bandejas",
-      description: "Distribución y recorrido de bandejas.",
-      icon: "▤",
-      color: "green",
-    },
-
-    {
-      title: "Cañerías",
-      description: "Canalizaciones y conexiones técnicas.",
-      icon: "◫",
-      color: "orange",
-    },
-
-    {
-      title: "Iluminación",
-      description: "Configuración de luminarias y alturas.",
-      icon: "✦",
-      color: "purple",
-    },
-
-    {
-      title: "Materiales",
-      description: "Consolidado técnico y metrados.",
-      icon: "◩",
-      color: "blue",
-    },
+    { title: "Bandejas", description: "AB1 por obra.", icon: "▤", color: "green", module: "bandejas" },
+    { title: "Ductos", description: "AB2 por obra.", icon: "◫", color: "orange", module: "ductos" },
+    { title: "Luminarias", description: "E1 por obra.", icon: "✦", color: "purple", module: "luminarias" },
+    { title: "Tableros materiales", description: "C1 accesorios internos.", icon: "◩", color: "blue", module: "tableros-materiales" },
   ];
 
   return (
@@ -192,6 +165,7 @@ function TableroDetalle({ tablero }) {
                   open-mini-btn
                   ${modulo.color}
                 `}
+                onClick={() => onOpenModule?.(modulo.module, tablero)}
               >
                 → Abrir módulo
               </button>

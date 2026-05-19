@@ -1,41 +1,51 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
-export const getObras = async () => {
-  const res = await fetch(`${API_URL}/obras`);
+const json = async (res) => {
+  if (!res.ok) throw new Error(await res.text());
   return res.json();
 };
 
-export const createObra = async (obra) => {
-  const res = await fetch("http://localhost:3000/api/obras", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(obra),
-  });
+const get = (url) => fetch(`${API_URL}${url}`).then(json);
+const send = (url, method, body) => fetch(`${API_URL}${url}`, {
+  method,
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+}).then(json);
 
-  return res.json();
-};
+export const getObras = () => get("/obras");
+export const createObra = (obra) => send("/obras", "POST", obra);
+export const updateObra = (id, obra) => send(`/obras/${id}`, "PUT", obra);
+export const deleteObra = (id) => send(`/obras/${id}`, "DELETE");
 
-export const getTableros = async (obraId) => {
-  const res = await fetch(`http://localhost:3000/api/tableros/obra/${obraId}`);
-  return res.json();
-};
+export const getTableros = (obraId) => get(`/tableros/obra/${obraId}`);
+export const createTablero = (tablero) => send("/tableros", "POST", tablero);
+export const getLastTablero = (obraId) => get(`/tableros/last/${obraId}`);
 
-export const createTablero = async (tablero) => {
-  const res = await fetch("http://localhost:3000/api/tableros", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(tablero),
-  });
+export const getCircuitos = (tableroId, tipo) => get(`/circuitos/tablero/${tableroId}/${tipo}`);
+export const getCircuitosByObra = (obraId, tipo) => get(`/circuitos/obra/${obraId}/${tipo}`);
+export const createCircuito = (circuito) => send("/circuitos", "POST", circuito);
+export const updateCircuito = (id, cambios) => send(`/circuitos/${id}`, "PUT", cambios);
+export const deleteCircuito = (id) => send(`/circuitos/${id}`, "DELETE");
 
-  return res.json();
-};
+export const getTerminaciones = (obraId, tipo) => get(`/terminaciones/obra/${obraId}/${tipo}`);
+export const upsertTerminacion = (data) => send("/terminaciones", "POST", data);
 
-export const getLastTablero = async (obraId) => {
-  const res = await fetch(`http://localhost:3000/api/tableros/last/${obraId}`);
+export const getPuestaATierra = (obraId) => get(`/puesta-a-tierra/obra/${obraId}`);
+export const upsertPuestaATierra = (data) => send("/puesta-a-tierra", "POST", data);
 
-  return res.json();
-};
+export const getTablerosMateriales = (obraId) => get(`/tableros-materiales/obra/${obraId}`);
+export const upsertTableroMaterial = (data) => send("/tableros-materiales", "POST", data);
+
+export const getLuminarias = (obraId) => get(`/luminarias/obra/${obraId}`);
+export const upsertLuminaria = (data) => send("/luminarias", "POST", data);
+
+export const getBandejas = (obraId) => get(`/bandejas/obra/${obraId}`);
+export const upsertBandeja = (data) => send("/bandejas", "POST", data);
+
+export const getDuctos = (obraId) => get(`/ductos/obra/${obraId}`);
+export const upsertDucto = (data) => send("/ductos", "POST", data);
+
+export const getPorteros = (obraId) => get(`/porteros/obra/${obraId}`);
+export const createPortero = (data) => send("/porteros", "POST", data);
+export const updatePortero = (id, data) => send(`/porteros/${id}`, "PUT", data);
+export const deletePortero = (id) => send(`/porteros/${id}`, "DELETE");

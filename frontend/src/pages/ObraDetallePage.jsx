@@ -10,10 +10,23 @@ import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/ui/EmptyState";
 
 import CollapsibleSection from "../components/ui/CollapsibleSection";
+import CircuitosPage from "./CircuitosPage";
+import CanalizacionesPage from "./CanalizacionesPage";
+import TerminacionesPage from "./TerminacionesPage";
+import PuestaATierraPage from "./PuestaATierraPage";
+import TablerosMaterialesPage from "./TablerosMaterialesPage";
+import LuminariasPage from "./LuminariasPage";
+import BandejasPage from "./BandejasPage";
+import DuctosPage from "./DuctosPage";
+import PorterosPage from "./PorterosPage";
+import ObraResumenPage from "./ObraResumenPage";
+
 
 function ObraDetallePage({ obra, onBack }) {
   const [tableros, setTableros] = useState([]);
   const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
+  const [moduloActivo, setModuloActivo] = useState(null);
+  const [tableroModulo, setTableroModulo] = useState(null);
 
   const [nombreTablero, setNombreTablero] = useState("");
   const [alturaLocal, setAlturaLocal] = useState("");
@@ -27,6 +40,7 @@ function ObraDetallePage({ obra, onBack }) {
   const [agregadoCajaCentro, setAgregadoCajaCentro] = useState("");
   const [agregadoCajaBrazo, setAgregadoCajaBrazo] = useState("");
   const [agregadoHEspecial, setAgregadoHEspecial] = useState("");
+  const [extraPorVigas, setExtraPorVigas] = useState("");
   const [tipoTableroId, setTipoTableroId] = useState(1);
 
   useEffect(() => {
@@ -58,6 +72,7 @@ function ObraDetallePage({ obra, onBack }) {
     setAgregadoCajaCentro("");
     setAgregadoCajaBrazo("");
     setAgregadoHEspecial("");
+    setExtraPorVigas("");
     setTipoTableroId(1);
   };
 
@@ -84,6 +99,7 @@ function ObraDetallePage({ obra, onBack }) {
       agregado_caja_centro: agregadoCajaCentro,
       agregado_caja_brazo: agregadoCajaBrazo,
       agregado_h_especial: agregadoHEspecial,
+      extra_por_vigas: extraPorVigas,
     });
 
     limpiarFormularioTablero();
@@ -110,7 +126,18 @@ function ObraDetallePage({ obra, onBack }) {
     setAgregadoCajaCentro(ultimo.agregado_caja_centro || "");
     setAgregadoCajaBrazo(ultimo.agregado_caja_brazo || "");
     setAgregadoHEspecial(ultimo.agregado_h_especial || "");
+    setExtraPorVigas(ultimo.extra_por_vigas || "");
     setTipoTableroId(ultimo.tipo_tablero_id || 1);
+  };
+
+  const abrirModulo = (modulo, tablero = null) => {
+    setModuloActivo(modulo);
+    setTableroModulo(tablero);
+  };
+
+  const cerrarModulo = () => {
+    setModuloActivo(null);
+    setTableroModulo(null);
   };
 
   if (!obra) {
@@ -128,6 +155,22 @@ function ObraDetallePage({ obra, onBack }) {
         />
       </div>
     );
+  }
+
+  if (moduloActivo) {
+    const propsObra = { obra, onBack: cerrarModulo };
+    if (moduloActivo === "circuitos-electrica") return <CircuitosPage tablero={tableroModulo} tipo="electrica" onBack={cerrarModulo} />;
+    if (moduloActivo === "circuitos-debiles") return <CircuitosPage tablero={tableroModulo} tipo="debiles" onBack={cerrarModulo} />;
+    if (moduloActivo === "canalizaciones") return <CanalizacionesPage {...propsObra} />;
+    if (moduloActivo === "terminaciones-electrica") return <TerminacionesPage obra={obra} tipo="electrica" onBack={cerrarModulo} />;
+    if (moduloActivo === "terminaciones-debiles") return <TerminacionesPage obra={obra} tipo="debiles" onBack={cerrarModulo} />;
+    if (moduloActivo === "puesta-a-tierra") return <PuestaATierraPage {...propsObra} />;
+    if (moduloActivo === "tableros-materiales") return <TablerosMaterialesPage {...propsObra} />;
+    if (moduloActivo === "luminarias") return <LuminariasPage {...propsObra} />;
+    if (moduloActivo === "bandejas") return <BandejasPage {...propsObra} />;
+    if (moduloActivo === "ductos") return <DuctosPage {...propsObra} />;
+    if (moduloActivo === "porteros") return <PorterosPage {...propsObra} />;
+    if (moduloActivo === "resumen-obra") return <ObraResumenPage {...propsObra} />;
   }
 
   return (
@@ -199,12 +242,38 @@ function ObraDetallePage({ obra, onBack }) {
           setAgregadoCajaBrazo={setAgregadoCajaBrazo}
           agregadoHEspecial={agregadoHEspecial}
           setAgregadoHEspecial={setAgregadoHEspecial}
+          extraPorVigas={extraPorVigas}
+          setExtraPorVigas={setExtraPorVigas}
           tipoTableroId={tipoTableroId}
           setTipoTableroId={setTipoTableroId}
           onCrear={handleCrearTablero}
           onPrecargar={handleNuevoConAnterior}
         />
       </CollapsibleSection>
+
+      <section className="obra-modulos-globales page-card">
+        <p className="eyebrow">Módulos de obra</p>
+        <div className="detalle-modulos-grid">
+          {[
+            ["resumen-obra", "Resumen general", "Control de obra"],
+            ["canalizaciones", "Canalizaciones", "A1+B1 automático"],
+            ["terminaciones-electrica", "Terminaciones eléctrica", "A2"],
+            ["terminaciones-debiles", "Terminaciones T. débiles", "B2"],
+            ["puesta-a-tierra", "Puesta a tierra", "A3"],
+            ["tableros-materiales", "Tableros materiales", "C1"],
+            ["luminarias", "Luminarias", "E1"],
+            ["bandejas", "Bandejas", "AB1"],
+            ["ductos", "Ductos", "AB2"],
+            ["porteros", "Porteros", "porteros"],
+          ].map(([key, title, desc]) => (
+            <article className="detalle-modulo-card" key={key}>
+              <h4>{title}</h4>
+              <p>{desc}</p>
+              <button className="open-mini-btn blue" onClick={() => abrirModulo(key)}>→ Abrir</button>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <CollapsibleSection
         eyebrow="Listado"
@@ -234,7 +303,7 @@ function ObraDetallePage({ obra, onBack }) {
           title={`Detalle de ${tableroSeleccionado.nombre}`}
           defaultOpen={true}
         >
-          <TableroDetalle tablero={tableroSeleccionado} />
+          <TableroDetalle tablero={tableroSeleccionado} onOpenModule={abrirModulo} />
         </CollapsibleSection>
       )}
     </div>

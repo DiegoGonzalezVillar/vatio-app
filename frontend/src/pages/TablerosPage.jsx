@@ -26,6 +26,7 @@ function TablerosPage() {
   const [agregadoCajaCentro, setAgregadoCajaCentro] = useState("");
   const [agregadoCajaBrazo, setAgregadoCajaBrazo] = useState("");
   const [agregadoHEspecial, setAgregadoHEspecial] = useState("");
+  const [extraPorVigas, setExtraPorVigas] = useState("");
   const [tipoTableroId, setTipoTableroId] = useState(1);
 
   useEffect(() => {
@@ -64,6 +65,7 @@ function TablerosPage() {
     setAgregadoCajaCentro("");
     setAgregadoCajaBrazo("");
     setAgregadoHEspecial("");
+    setExtraPorVigas("");
     setTipoTableroId(1);
   };
 
@@ -86,6 +88,7 @@ function TablerosPage() {
       agregado_caja_centro: agregadoCajaCentro,
       agregado_caja_brazo: agregadoCajaBrazo,
       agregado_h_especial: agregadoHEspecial,
+      extra_por_vigas: extraPorVigas,
     });
 
     limpiarFormularioTablero();
@@ -107,6 +110,7 @@ function TablerosPage() {
     setAlturaLlaveLuz(ultimo.altura_llave_luz || "");
     setAlturaToma(ultimo.altura_toma || "");
     setAlturaTablero(ultimo.altura_tablero || "");
+    setExtraPorVigas(ultimo.extra_por_vigas || "");
   };
 
   return (
@@ -136,6 +140,23 @@ function TablerosPage() {
         alturaTablero={alturaTablero}
         setAlturaTablero={setAlturaTablero}
         tipoTableroId={tipoTableroId}
+        setTipoTableroId={setTipoTableroId}
+        agregadoTablero=""
+        setAgregadoTablero={() => {}}
+        alturaBrazo=""
+        setAlturaBrazo={() => {}}
+        alturaEspecial=""
+        setAlturaEspecial={() => {}}
+        agregadoCajaHonda=""
+        setAgregadoCajaHonda={() => {}}
+        agregadoCajaCentro=""
+        setAgregadoCajaCentro={() => {}}
+        agregadoCajaBrazo=""
+        setAgregadoCajaBrazo={() => {}}
+        agregadoHEspecial=""
+        setAgregadoHEspecial={() => {}}
+        extraPorVigas={extraPorVigas}
+        setExtraPorVigas={setExtraPorVigas}
         onCrear={handleCrearTablero}
         onPrecargar={handleNuevoConAnterior}
       />
