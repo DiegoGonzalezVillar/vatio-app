@@ -49,9 +49,19 @@ CREATE TABLE IF NOT EXISTS puesta_a_tierra (
   id SERIAL PRIMARY KEY,
   obra_id INT REFERENCES obras(id) ON DELETE CASCADE,
   item_id VARCHAR(40) NOT NULL,
+  descripcion VARCHAR(160),
+  unidad VARCHAR(20) DEFAULT 'unid',
   cantidad DECIMAL(10,2) DEFAULT 0,
+  orden INT DEFAULT 999,
+  es_personalizado BOOLEAN DEFAULT false,
   UNIQUE (obra_id, item_id)
 );
+
+ALTER TABLE puesta_a_tierra
+  ADD COLUMN IF NOT EXISTS descripcion VARCHAR(160),
+  ADD COLUMN IF NOT EXISTS unidad VARCHAR(20) DEFAULT 'unid',
+  ADD COLUMN IF NOT EXISTS orden INT DEFAULT 999,
+  ADD COLUMN IF NOT EXISTS es_personalizado BOOLEAN DEFAULT false;
 
 CREATE TABLE IF NOT EXISTS tableros_materiales (
   id SERIAL PRIMARY KEY,
@@ -147,3 +157,25 @@ ALTER TABLE circuitos
   ADD COLUMN IF NOT EXISTS picada_piso_m DECIMAL(10,3) DEFAULT 0,
   ADD COLUMN IF NOT EXISTS zanja_m DECIMAL(10,3) DEFAULT 0,
   ADD COLUMN IF NOT EXISTS detalle_tecnico JSONB;
+
+-- Catálogos personalizables por módulo.
+-- Permite agregar ítems que no vienen fijos en el Excel y reutilizarlos en futuras obras.
+CREATE TABLE IF NOT EXISTS catalogos_items (
+  id SERIAL PRIMARY KEY,
+  modulo VARCHAR(40) NOT NULL,
+  tipo VARCHAR(20) NOT NULL,
+  grupo VARCHAR(80) NOT NULL,
+  tipo_caja VARCHAR(30) NOT NULL,
+  item VARCHAR(160) NOT NULL,
+  materiales JSONB,
+  activo BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (modulo, tipo, grupo, tipo_caja, item)
+);
+
+-- Ajustes para catálogos personalizados editables.
+ALTER TABLE terminaciones
+  ALTER COLUMN item TYPE VARCHAR(160);
+
+ALTER TABLE catalogos_items
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();

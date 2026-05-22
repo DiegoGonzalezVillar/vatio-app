@@ -11,6 +11,7 @@ import luminariasRoutes from "./routes/luminarias.routes.js";
 import bandejasRoutes from "./routes/bandejas.routes.js";
 import ductosRoutes from "./routes/ductos.routes.js";
 import porterosRoutes from "./routes/porteros.routes.js";
+import catalogosRoutes from "./routes/catalogos.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,7 @@ app.use("/api/luminarias", luminariasRoutes);
 app.use("/api/bandejas", bandejasRoutes);
 app.use("/api/ductos", ductosRoutes);
 app.use("/api/porteros", porterosRoutes);
+app.use("/api/catalogos", catalogosRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);

@@ -20,7 +20,7 @@ const fmt3 = (value) => fmt(value, 3);
 const fmtCoef = (value) => n(value).toFixed(2).replace(".", ",");
 const sumRows = (rows, field) => rows.reduce((acc, row) => acc + n(row[field]), 0);
 const sumTerminacionesPorCaja = (rows = []) => {
-  const total = { llana: 0, honda: 0, centro: 0, brazo: 0, otros: 0 };
+  const total = { llana: 0, honda: 0, centro: 0, brazo: 0, camara: 0, registro: 0, otros: 0 };
   rows.forEach((row) => {
     const tipo = String(row.tipo_caja || row.tipoCaja || "otros").toLowerCase();
     const cantidad = n(row.cantidad);
@@ -28,6 +28,8 @@ const sumTerminacionesPorCaja = (rows = []) => {
     else if (tipo.includes("honda")) total.honda += cantidad;
     else if (tipo.includes("centro")) total.centro += cantidad;
     else if (tipo.includes("brazo")) total.brazo += cantidad;
+    else if (tipo.includes("camara") || tipo.includes("cámara")) total.camara += cantidad;
+    else if (tipo.includes("registro")) total.registro += cantidad;
     else total.otros += cantidad;
   });
   return total;
@@ -206,13 +208,13 @@ function ObraResumenPage({ obra, onBack }) {
                 )}
                 <tr>
                   <td>A2 Terminaciones eléctrica</td>
-                  <td>Terminaciones: llana / honda / centro / brazo / otros</td>
-                  <td>{resumen.terminacionesElectricaPorCaja.llana} / {resumen.terminacionesElectricaPorCaja.honda} / {resumen.terminacionesElectricaPorCaja.centro} / {resumen.terminacionesElectricaPorCaja.brazo} / {resumen.terminacionesElectricaPorCaja.otros}</td>
+                  <td>Terminaciones: llana / honda / centro / brazo / cámaras / registros / otros</td>
+                  <td>{resumen.terminacionesElectricaPorCaja.llana} / {resumen.terminacionesElectricaPorCaja.honda} / {resumen.terminacionesElectricaPorCaja.centro} / {resumen.terminacionesElectricaPorCaja.brazo} / {resumen.terminacionesElectricaPorCaja.camara} / {resumen.terminacionesElectricaPorCaja.registro} / {resumen.terminacionesElectricaPorCaja.otros}</td>
                 </tr>
                 <tr>
                   <td>B2 Terminaciones T. débiles</td>
-                  <td>Terminaciones: llana / honda / centro / brazo / otros</td>
-                  <td>{resumen.terminacionesDebilesPorCaja.llana} / {resumen.terminacionesDebilesPorCaja.honda} / {resumen.terminacionesDebilesPorCaja.centro} / {resumen.terminacionesDebilesPorCaja.brazo} / {resumen.terminacionesDebilesPorCaja.otros}</td>
+                  <td>Terminaciones: llana / honda / centro / brazo / cámaras / registros / otros</td>
+                  <td>{resumen.terminacionesDebilesPorCaja.llana} / {resumen.terminacionesDebilesPorCaja.honda} / {resumen.terminacionesDebilesPorCaja.centro} / {resumen.terminacionesDebilesPorCaja.brazo} / {resumen.terminacionesDebilesPorCaja.camara} / {resumen.terminacionesDebilesPorCaja.registro} / {resumen.terminacionesDebilesPorCaja.otros}</td>
                 </tr>
                 <tr>
                   <td>A3 Puesta a tierra</td>

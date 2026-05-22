@@ -14,6 +14,69 @@ const parseNumber = (value, fallback = 0) => {
 
 const fail = (res, e, msg) => { console.error(e); res.status(500).json({ error: msg }); };
 
+const PUESTA_TIERRA_EXTRA_COLUMNS = [
+  "descripcion",
+  "unidad",
+  "orden",
+  "es_personalizado",
+];
+
+let puestaATierraSchemaCache = null;
+
+const readPuestaATierraSchema = async () => {
+  const result = await pool.query(
+    `SELECT column_name
+       FROM information_schema.columns
+      WHERE table_schema = current_schema()
+        AND table_name = 'puesta_a_tierra'`
+  );
+  const columns = new Set(result.rows.map((row) => row.column_name));
+  return {
+    hasDescripcion: columns.has("descripcion"),
+    hasUnidad: columns.has("unidad"),
+    hasOrden: columns.has("orden"),
+    hasEsPersonalizado: columns.has("es_personalizado"),
+  };
+};
+
+const getPuestaATierraSchema = async () => {
+  if (!puestaATierraSchemaCache) {
+    puestaATierraSchemaCache = await readPuestaATierraSchema();
+  }
+  return puestaATierraSchemaCache;
+};
+
+const tryEnsurePuestaATierraSchema = async () => {
+  const schema = await getPuestaATierraSchema();
+  const missing = [
+    !schema.hasDescripcion && "descripcion VARCHAR(160)",
+    !schema.hasUnidad && "unidad VARCHAR(20) DEFAULT 'unid'",
+    !schema.hasOrden && "orden INT DEFAULT 999",
+    !schema.hasEsPersonalizado && "es_personalizado BOOLEAN DEFAULT false",
+  ].filter(Boolean);
+
+  if (missing.length === 0) return schema;
+
+  try {
+    await pool.query(`ALTER TABLE puesta_a_tierra ADD COLUMN IF NOT EXISTS ${missing.join(", ADD COLUMN IF NOT EXISTS ")}`);
+    puestaATierraSchemaCache = await readPuestaATierraSchema();
+  } catch (error) {
+    // En algunas instalaciones el usuario de la app no es owner de la tabla.
+    // No bloqueamos el modulo: seguimos con el esquema legacy y guardamos cantidad.
+    if (error?.code !== "42501") console.warn("No se pudo ajustar esquema puesta_a_tierra", error);
+  }
+
+  return getPuestaATierraSchema();
+};
+
+const buildLegacyPuestaRow = (row, fallback = {}) => ({
+  ...row,
+  descripcion: row.descripcion ?? fallback.descripcion ?? row.item_id,
+  unidad: row.unidad ?? fallback.unidad ?? "unid",
+  orden: row.orden ?? fallback.orden ?? 999,
+  es_personalizado: row.es_personalizado ?? fallback.es_personalizado ?? false,
+});
+
 export const getTerminaciones = async (req, res) => {
   try { const r = await pool.query("SELECT * FROM terminaciones WHERE obra_id=$1 AND tipo=$2 ORDER BY tipo_caja,item", [req.params.obraId, req.params.tipo]); ok(res, r.rows); }
   catch (e) { fail(res, e, "Error obteniendo terminaciones"); }
@@ -24,12 +87,93 @@ export const upsertTerminacion = async (req, res) => {
 };
 
 export const getPuestaATierra = async (req, res) => {
-  try { const r = await pool.query("SELECT * FROM puesta_a_tierra WHERE obra_id=$1 ORDER BY item_id", [req.params.obraId]); ok(res, r.rows); }
+  try {
+    const schema = await tryEnsurePuestaATierraSchema();
+    const extraSelect = [
+      schema.hasDescripcion ? "descripcion" : "NULL::varchar AS descripcion",
+      schema.hasUnidad ? "unidad" : "NULL::varchar AS unidad",
+      schema.hasOrden ? "orden" : "999 AS orden",
+      schema.hasEsPersonalizado ? "es_personalizado" : "false AS es_personalizado",
+    ].join(", ");
+    const r = await pool.query(
+      `SELECT id, obra_id, item_id, cantidad, ${extraSelect}
+         FROM puesta_a_tierra
+        WHERE obra_id=$1
+        ORDER BY orden,item_id`,
+      [req.params.obraId]
+    );
+    ok(res, r.rows.map((row) => buildLegacyPuestaRow(row)));
+  }
   catch (e) { fail(res, e, "Error obteniendo puesta a tierra"); }
 };
 export const upsertPuestaATierra = async (req, res) => {
-  try { const { obra_id,item_id,cantidad } = req.body; const r = await pool.query(`INSERT INTO puesta_a_tierra (obra_id,item_id,cantidad) VALUES ($1,$2,$3) ON CONFLICT (obra_id,item_id) DO UPDATE SET cantidad=EXCLUDED.cantidad RETURNING *`, [obra_id,item_id,cantidad || 0]); ok(res, r.rows[0]); }
+  try {
+    const schema = await tryEnsurePuestaATierraSchema();
+    const {
+      obra_id,
+      item_id,
+      descripcion,
+      unidad,
+      orden,
+      es_personalizado,
+    } = req.body;
+    const cantidad = parseNumber(req.body.cantidad, 0);
+
+    if (schema.hasDescripcion && schema.hasUnidad && schema.hasOrden && schema.hasEsPersonalizado) {
+      const r = await pool.query(
+        `INSERT INTO puesta_a_tierra (obra_id,item_id,descripcion,unidad,cantidad,orden,es_personalizado)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)
+         ON CONFLICT (obra_id,item_id)
+         DO UPDATE SET
+          descripcion=EXCLUDED.descripcion,
+          unidad=EXCLUDED.unidad,
+          cantidad=EXCLUDED.cantidad,
+          orden=EXCLUDED.orden,
+          es_personalizado=EXCLUDED.es_personalizado
+         RETURNING *`,
+        [
+          obra_id,
+          item_id,
+          descripcion || item_id,
+          unidad || "unid",
+          cantidad,
+          orden || 999,
+          Boolean(es_personalizado),
+        ]
+      );
+      ok(res, buildLegacyPuestaRow(r.rows[0]));
+      return;
+    }
+
+    const r = await pool.query(
+      `INSERT INTO puesta_a_tierra (obra_id,item_id,cantidad)
+       VALUES ($1,$2,$3)
+       ON CONFLICT (obra_id,item_id)
+       DO UPDATE SET cantidad=EXCLUDED.cantidad
+       RETURNING id, obra_id, item_id, cantidad`,
+      [obra_id, item_id, cantidad]
+    );
+    ok(res, buildLegacyPuestaRow(r.rows[0], { descripcion, unidad, orden, es_personalizado }));
+  }
   catch (e) { fail(res, e, "Error guardando puesta a tierra"); }
+};
+export const deletePuestaATierra = async (req, res) => {
+  try {
+    const schema = await tryEnsurePuestaATierraSchema();
+    if (schema.hasEsPersonalizado) {
+      await pool.query(
+        "DELETE FROM puesta_a_tierra WHERE item_id=$1 AND es_personalizado=true",
+        [req.params.itemId]
+      );
+    } else {
+      await pool.query(
+        "DELETE FROM puesta_a_tierra WHERE item_id=$1 AND item_id LIKE 'custom_%'",
+        [req.params.itemId]
+      );
+    }
+    ok(res, { message: "Material eliminado" });
+  }
+  catch (e) { fail(res, e, "Error eliminando material de puesta a tierra"); }
 };
 
 export const getTablerosMateriales = async (req, res) => {

@@ -32,6 +32,7 @@ export const upsertTerminacion = (data) => send("/terminaciones", "POST", data);
 
 export const getPuestaATierra = (obraId) => get(`/puesta-a-tierra/obra/${obraId}`);
 export const upsertPuestaATierra = (data) => send("/puesta-a-tierra", "POST", data);
+export const deletePuestaATierra = (itemId) => send(`/puesta-a-tierra/${itemId}`, "DELETE", {});
 
 export const getTablerosMateriales = (obraId) => get(`/tableros-materiales/obra/${obraId}`);
 export const upsertTableroMaterial = (data) => send("/tableros-materiales", "POST", data);
@@ -49,3 +50,8 @@ export const getPorteros = (obraId) => get(`/porteros/obra/${obraId}`);
 export const createPortero = (data) => send("/porteros", "POST", data);
 export const updatePortero = (id, data) => send(`/porteros/${id}`, "PUT", data);
 export const deletePortero = (id) => send(`/porteros/${id}`, "DELETE");
+
+export const getTerminacionesCatalogo = (tipo) => get(`/catalogos/terminaciones/${tipo}`);
+export const createTerminacionCatalogo = (tipo, data) => send(`/catalogos/terminaciones/${tipo}`, "POST", data);
+export const updateTerminacionCatalogo = (tipo, id, data) => send(`/catalogos/terminaciones/${tipo}/${id}`, "PUT", data);
+export const deleteTerminacionCatalogo = (tipo, id) => send(`/catalogos/terminaciones/${tipo}/${id}`, "DELETE", {});

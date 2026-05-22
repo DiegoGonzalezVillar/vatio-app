@@ -27,6 +27,7 @@ function ObraDetallePage({ obra, onBack }) {
   const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
   const [moduloActivo, setModuloActivo] = useState(null);
   const [tableroModulo, setTableroModulo] = useState(null);
+  const [modulosObraOpen, setModulosObraOpen] = useState(true);
 
   const [nombreTablero, setNombreTablero] = useState("");
   const [alturaLocal, setAlturaLocal] = useState("");
@@ -251,28 +252,43 @@ function ObraDetallePage({ obra, onBack }) {
         />
       </CollapsibleSection>
 
-      <section className="obra-modulos-globales page-card">
-        <p className="eyebrow">Módulos de obra</p>
-        <div className="detalle-modulos-grid">
-          {[
-            ["resumen-obra", "Resumen general", "Control de obra"],
-            ["canalizaciones", "Canalizaciones", "A1+B1 automático"],
-            ["terminaciones-electrica", "Terminaciones eléctrica", "A2"],
-            ["terminaciones-debiles", "Terminaciones T. débiles", "B2"],
-            ["puesta-a-tierra", "Puesta a tierra", "A3"],
-            ["tableros-materiales", "Tableros materiales", "C1"],
-            ["luminarias", "Luminarias", "E1"],
-            ["bandejas", "Bandejas", "AB1"],
-            ["ductos", "Ductos", "AB2"],
-            ["porteros", "Porteros", "porteros"],
-          ].map(([key, title, desc]) => (
-            <article className="detalle-modulo-card" key={key}>
-              <h4>{title}</h4>
-              <p>{desc}</p>
-              <button className="open-mini-btn blue" onClick={() => abrirModulo(key)}>→ Abrir</button>
-            </article>
-          ))}
-        </div>
+      <section className={`obra-modulos-globales page-card ${modulosObraOpen ? "is-open" : "is-closed"}`}>
+        <button
+          type="button"
+          className="obra-modulos-header"
+          onClick={() => setModulosObraOpen((current) => !current)}
+          aria-expanded={modulosObraOpen}
+        >
+          <span className="obra-modulos-title-wrap">
+            <span className="eyebrow">Módulos de obra</span>
+            <strong>Módulos disponibles</strong>
+          </span>
+          <span className="obra-modulos-count">10 módulos</span>
+          <span className={`collapse-icon ${modulosObraOpen ? "open" : ""}`}>⌄</span>
+        </button>
+
+        {modulosObraOpen && (
+          <div className="detalle-modulos-grid">
+            {[
+              ["resumen-obra", "Resumen general", "Control de obra"],
+              ["canalizaciones", "Canalizaciones", "A1+B1 automático"],
+              ["terminaciones-electrica", "Terminaciones eléctrica", "A2"],
+              ["terminaciones-debiles", "Terminaciones T. débiles", "B2"],
+              ["puesta-a-tierra", "Puesta a tierra", "A3"],
+              ["tableros-materiales", "Tableros materiales", "C1"],
+              ["luminarias", "Luminarias", "E1"],
+              ["bandejas", "Bandejas", "AB1"],
+              ["ductos", "Ductos", "AB2"],
+              ["porteros", "Porteros", "porteros"],
+            ].map(([key, title, desc]) => (
+              <article className="detalle-modulo-card" key={key}>
+                <h4>{title}</h4>
+                <p>{desc}</p>
+                <button className="open-mini-btn blue" onClick={() => abrirModulo(key)}>→ Abrir</button>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <CollapsibleSection

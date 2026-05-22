@@ -24,6 +24,13 @@ export const CONDUCTORES_DEBILES = [
 ];
 
 export const TERMINACIONES_ELECTRICA = [
+  { titulo: "CÁMARAS" },
+  { item: "Cámara 20 x 20", tipo_caja: "CAMARA", materiales: ["GENERAL"] },
+  { item: "Cámara 40 x 40", tipo_caja: "CAMARA", materiales: ["GENERAL"] },
+  { item: "Cámara 60 x 60", tipo_caja: "CAMARA", materiales: ["GENERAL"] },
+  { item: "Cámara 60 x 110", tipo_caja: "CAMARA", materiales: ["GENERAL"] },
+
+  { titulo: "CAJA LLANA" },
   { item: "INTERRUPTOR PULSADOR", tipo_caja: "LLANA" },
   { item: "INTERRUPTOR UNIPOLAR", tipo_caja: "LLANA" },
   { item: "INTERRUPTOR UNIPOLAR 2S", tipo_caja: "LLANA" },
@@ -34,11 +41,57 @@ export const TERMINACIONES_ELECTRICA = [
   { item: "SENSOR DE MOVIMIENTO PARA LUZ", tipo_caja: "LLANA" },
   { item: "INTERRUPTOR U. DE COMBINACION 2S", tipo_caja: "LLANA" },
   { item: "TIMBRE", tipo_caja: "LLANA" },
+
+  { titulo: "CAJA HONDA" },
   { item: "TOMACORRIENTE SCHUCKO", tipo_caja: "HONDA" },
   { item: "TOMACORRIENTE TRES EN LINEA", tipo_caja: "HONDA" },
   { item: "TOMACORRIENTE UNIVERSAL", tipo_caja: "HONDA" },
   { item: "TOMACORRIENTE INDUSTRIAL PARA DUCTO", tipo_caja: "HONDA" },
+  { item: "TC PARA DUCTO", tipo_caja: "HONDA" },
+  { item: "TOMACORRIENTE SCHUKO C/BIPOLAR", tipo_caja: "HONDA" },
+  { item: "TOMACORRIENTE 3 EN LINEA C/BIPOLAR", tipo_caja: "HONDA" },
+  { item: "TC EMBUTIDO CIELORRASO", tipo_caja: "HONDA" },
+  { item: "INTERRUPTOR BIPOLAR", tipo_caja: "HONDA" },
+  { item: "CONECCIÓN A. ACONDICIONADO", tipo_caja: "HONDA" },
+  { item: "TOMACORRIENTE SCHUKO + TRES EN LINEA", tipo_caja: "HONDA" },
+
+  { titulo: "CAJA CENTRO" },
+  { item: "CAJA CENTRO LUMINARIA", tipo_caja: "CENTRO" },
+  { item: "CAJA PARA TUBO DE LUZ", tipo_caja: "CENTRO" },
+  { item: "CAJA PARA ARTEFACTO", tipo_caja: "CENTRO" },
+  { item: "ART DE EMB DOBLE", tipo_caja: "CENTRO" },
+  { item: "CENTRO DICROICA", tipo_caja: "CENTRO" },
+  { item: "EMBUTIDO BAJO CONSUMO", tipo_caja: "CENTRO" },
+  { item: "LUZ DE EMERGENCIA", tipo_caja: "CENTRO" },
+  { item: "LUZ DE SALIDA EMERGENCIA (mirar según criterio)", tipo_caja: "CENTRO" },
+  { item: "SENSOR 180 º", tipo_caja: "CENTRO" },
+  { item: "LED DE PISO PARA LUMINARIA 10", tipo_caja: "CENTRO" },
+  { item: "LED DE PISO PARA LUMINARIA 6", tipo_caja: "CENTRO" },
+  { item: "CONEXIÓN FIJA", tipo_caja: "CENTRO" },
+
+  { titulo: "CAJA BRAZO" },
+  { item: "VENTILADOR - EXTRACTOR", tipo_caja: "BRAZO" },
+  { item: "CAJA TUBO LUMINARIA", tipo_caja: "BRAZO" },
+  { item: "CAJA BRAZO LUMINARIA", tipo_caja: "BRAZO" },
+  { item: "INDICADOR ESC. DE EMERGENCIA", tipo_caja: "BRAZO" },
+  { item: "FLECHA LED DE EMERGENCIA", tipo_caja: "BRAZO" },
+  { item: "LUZ DE EMERGENCIA (mirar según criterio)", tipo_caja: "BRAZO" },
+  { item: "LUZ DE SALIDA EMERGENCIA (mirar según criterio)", tipo_caja: "BRAZO" },
+  { item: "LUZ SALIDA DE GARAGE", tipo_caja: "BRAZO" },
+
+  { titulo: "REGISTROS" },
+  { item: "R 10 x 10", tipo_caja: "REGISTRO" },
+  { item: "R 15 x 20", tipo_caja: "REGISTRO" },
+  { item: "R 25 x 35", tipo_caja: "REGISTRO" },
+  { item: "R 40 x 50", tipo_caja: "REGISTRO" },
+  { item: "REGISTROS PARA CADA PISO", tipo_caja: "REGISTRO" },
+
+  { titulo: "OTROS" },
+  { item: "TABLERO PORTERO ELECTRICO", tipo_caja: "OTROS" },
+  { item: "TERMOSTATO", tipo_caja: "OTROS" },
 ];
+
+export const TIPOS_CAJA_TERMINACIONES = ["LLANA", "HONDA", "CENTRO", "BRAZO", "CAMARA", "REGISTRO", "OTROS"];
 
 export const TERMINACIONES_DEBILES = [
   { titulo: "INCENDIO" },
