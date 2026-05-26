@@ -1,6 +1,6 @@
-function Button({ children, variant = "primary", className = "", ...props }) {
+function Button({ children, variant = "primary", ...props }) {
   return (
-    <button className={`btn btn-${variant} ${className}`} {...props}>
+    <button className={`btn btn-${variant}`} {...props}>
       {children}
     </button>
   );

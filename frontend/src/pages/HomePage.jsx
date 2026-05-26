@@ -68,8 +68,8 @@ function HomePage({ onGoObras, onVerObra }) {
         <button className="module-card">
           <div className="module-icon module-orange">⚡</div>
           <div>
-            <h3>Insumos</h3>
-            <p>Todo tipo de materiales a utilizar.</p>
+            <h3>Tableros</h3>
+            <p>Configurar alturas, agregados y cálculos automáticos.</p>
           </div>
           <span className="module-arrow">→</span>
         </button>
