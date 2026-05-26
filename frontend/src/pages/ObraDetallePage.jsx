@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  getTableros,
-  createTablero,
-  updateTablero,
-  getLastTablero,
-} from "../services/api";
-
-import toast from "react-hot-toast";
+import { getTableros, createTablero, getLastTablero } from "../services/api";
 
 import TableroForm from "../components/TableroForm";
 import TablerosList from "../components/TablerosList";
@@ -15,12 +8,26 @@ import TableroDetalle from "../components/TableroDetalle";
 import Button from "../components/ui/Button";
 import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/ui/EmptyState";
+
 import CollapsibleSection from "../components/ui/CollapsibleSection";
+import CircuitosPage from "./CircuitosPage";
+import CanalizacionesPage from "./CanalizacionesPage";
+import TerminacionesPage from "./TerminacionesPage";
+import PuestaATierraPage from "./PuestaATierraPage";
+import TablerosMaterialesPage from "./TablerosMaterialesPage";
+import LuminariasPage from "./LuminariasPage";
+import BandejasPage from "./BandejasPage";
+import DuctosPage from "./DuctosPage";
+import PorterosPage from "./PorterosPage";
+import ObraResumenPage from "./ObraResumenPage";
+
 
 function ObraDetallePage({ obra, onBack }) {
   const [tableros, setTableros] = useState([]);
   const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
-  const [tableroEditando, setTableroEditando] = useState(null);
+  const [moduloActivo, setModuloActivo] = useState(null);
+  const [tableroModulo, setTableroModulo] = useState(null);
+  const [modulosObraOpen, setModulosObraOpen] = useState(true);
 
   const [nombreTablero, setNombreTablero] = useState("");
   const [alturaLocal, setAlturaLocal] = useState("");
@@ -34,39 +41,26 @@ function ObraDetallePage({ obra, onBack }) {
   const [agregadoCajaCentro, setAgregadoCajaCentro] = useState("");
   const [agregadoCajaBrazo, setAgregadoCajaBrazo] = useState("");
   const [agregadoHEspecial, setAgregadoHEspecial] = useState("");
+  const [extraPorVigas, setExtraPorVigas] = useState("");
   const [tipoTableroId, setTipoTableroId] = useState(1);
 
   useEffect(() => {
     if (!obra?.id) return;
 
-    let activo = true;
-
     async function cargarTablerosIniciales() {
       const data = await getTableros(obra.id);
-
-      if (activo) {
-        setTableros(data);
-        setTableroSeleccionado(null);
-        setTableroEditando(null);
-      }
+      setTableros(data);
     }
 
     cargarTablerosIniciales();
-
-    return () => {
-      activo = false;
-    };
-  }, [obra?.id]);
+  }, [obra]);
 
   const cargarTableros = async () => {
-    if (!obra?.id) return;
-
     const data = await getTableros(obra.id);
     setTableros(data);
   };
 
   const limpiarFormularioTablero = () => {
-    setTableroEditando(null);
     setNombreTablero("");
     setAlturaLocal("");
     setAlturaLlaveLuz("");
@@ -79,35 +73,19 @@ function ObraDetallePage({ obra, onBack }) {
     setAgregadoCajaCentro("");
     setAgregadoCajaBrazo("");
     setAgregadoHEspecial("");
+    setExtraPorVigas("");
     setTipoTableroId(1);
-  };
-
-  const handleEditarTablero = (tablero) => {
-    setTableroEditando(tablero);
-
-    setNombreTablero(tablero.nombre || "");
-    setAlturaLocal(tablero.altura_local || "");
-    setAlturaLlaveLuz(tablero.altura_llave_luz || "");
-    setAlturaToma(tablero.altura_toma || "");
-    setAlturaTablero(tablero.altura_tablero || "");
-    setAgregadoTablero(tablero.agregado_tablero || "");
-    setAlturaBrazo(tablero.altura_brazo || "");
-    setAlturaEspecial(tablero.altura_especial || "");
-    setAgregadoCajaHonda(tablero.agregado_caja_honda || "");
-    setAgregadoCajaCentro(tablero.agregado_caja_centro || "");
-    setAgregadoCajaBrazo(tablero.agregado_caja_brazo || "");
-    setAgregadoHEspecial(tablero.agregado_h_especial || "");
-    setTipoTableroId(tablero.tipo_tablero_id || 1);
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCrearTablero = async (e) => {
     e.preventDefault();
 
-    if (!nombreTablero.trim()) return;
+    if (!nombreTablero.trim()) {
+      alert("Ingrese el nombre del tablero");
+      return;
+    }
 
-    const payload = {
+    await createTablero({
       obra_id: Number(obra.id),
       nombre: nombreTablero,
       tipo_tablero_id: Number(tipoTableroId),
@@ -122,23 +100,11 @@ function ObraDetallePage({ obra, onBack }) {
       agregado_caja_centro: agregadoCajaCentro,
       agregado_caja_brazo: agregadoCajaBrazo,
       agregado_h_especial: agregadoHEspecial,
-    };
+      extra_por_vigas: extraPorVigas,
+    });
 
-    try {
-      if (tableroEditando) {
-        await updateTablero(tableroEditando.id, payload);
-        toast.success("Tablero actualizado correctamente");
-      } else {
-        await createTablero(payload);
-        toast.success("Tablero creado correctamente");
-      }
-
-      limpiarFormularioTablero();
-      await cargarTableros();
-    } catch (error) {
-      console.error(error);
-      toast.error("No se pudo guardar el tablero");
-    }
+    limpiarFormularioTablero();
+    cargarTableros();
   };
 
   const handleNuevoConAnterior = async () => {
@@ -149,7 +115,6 @@ function ObraDetallePage({ obra, onBack }) {
       return;
     }
 
-    setTableroEditando(null);
     setNombreTablero("");
     setAlturaLocal(ultimo.altura_local || "");
     setAlturaLlaveLuz(ultimo.altura_llave_luz || "");
@@ -162,7 +127,18 @@ function ObraDetallePage({ obra, onBack }) {
     setAgregadoCajaCentro(ultimo.agregado_caja_centro || "");
     setAgregadoCajaBrazo(ultimo.agregado_caja_brazo || "");
     setAgregadoHEspecial(ultimo.agregado_h_especial || "");
+    setExtraPorVigas(ultimo.extra_por_vigas || "");
     setTipoTableroId(ultimo.tipo_tablero_id || 1);
+  };
+
+  const abrirModulo = (modulo, tablero = null) => {
+    setModuloActivo(modulo);
+    setTableroModulo(tablero);
+  };
+
+  const cerrarModulo = () => {
+    setModuloActivo(null);
+    setTableroModulo(null);
   };
 
   if (!obra) {
@@ -182,6 +158,22 @@ function ObraDetallePage({ obra, onBack }) {
     );
   }
 
+  if (moduloActivo) {
+    const propsObra = { obra, onBack: cerrarModulo };
+    if (moduloActivo === "circuitos-electrica") return <CircuitosPage tablero={tableroModulo} tipo="electrica" onBack={cerrarModulo} />;
+    if (moduloActivo === "circuitos-debiles") return <CircuitosPage tablero={tableroModulo} tipo="debiles" onBack={cerrarModulo} />;
+    if (moduloActivo === "canalizaciones") return <CanalizacionesPage {...propsObra} />;
+    if (moduloActivo === "terminaciones-electrica") return <TerminacionesPage obra={obra} tipo="electrica" onBack={cerrarModulo} />;
+    if (moduloActivo === "terminaciones-debiles") return <TerminacionesPage obra={obra} tipo="debiles" onBack={cerrarModulo} />;
+    if (moduloActivo === "puesta-a-tierra") return <PuestaATierraPage {...propsObra} />;
+    if (moduloActivo === "tableros-materiales") return <TablerosMaterialesPage {...propsObra} />;
+    if (moduloActivo === "luminarias") return <LuminariasPage {...propsObra} />;
+    if (moduloActivo === "bandejas") return <BandejasPage {...propsObra} />;
+    if (moduloActivo === "ductos") return <DuctosPage {...propsObra} />;
+    if (moduloActivo === "porteros") return <PorterosPage {...propsObra} />;
+    if (moduloActivo === "resumen-obra") return <ObraResumenPage {...propsObra} />;
+  }
+
   return (
     <div className="obra-detalle-page">
       <PageHeader
@@ -194,83 +186,6 @@ function ObraDetallePage({ obra, onBack }) {
           </Button>
         }
       />
-
-      <CollapsibleSection
-        eyebrow="Datos generales"
-        title="Información de la obra"
-        defaultOpen={true}
-      >
-        <div className="obra-card-meta">
-          <p>
-            <span>Nombre:</span>
-            <strong>{obra.nombre || "-"}</strong>
-          </p>
-          <p>
-            <span>Tipo:</span>
-            <strong>{obra.tipo_obra || "-"}</strong>
-          </p>
-          <p>
-            <span>Metros²:</span>
-            <strong>{obra.metros2 || "-"}</strong>
-          </p>
-          <p>
-            <span>Potencia:</span>
-            <strong>{obra.potencia || "-"}</strong>
-          </p>
-          <p>
-            <span>Contacto:</span>
-            <strong>{obra.nombre_contacto || "-"}</strong>
-          </p>
-          <p>
-            <span>Teléfono:</span>
-            <strong>{obra.telefono_contacto || "-"}</strong>
-          </p>
-          <p>
-            <span>Email:</span>
-            <strong>{obra.email_contacto || "-"}</strong>
-          </p>
-          <p>
-            <span>Ubicación:</span>
-            <strong>{obra.ubicacion || "-"}</strong>
-          </p>
-          <p>
-            <span>Empresa:</span>
-            <strong>{obra.empresa_solicitante || "-"}</strong>
-          </p>
-          <p>
-            <span>Estado:</span>
-            <strong>{obra.estado_obra || "-"}</strong>
-          </p>
-          <p>
-            <span>Archivos:</span>
-            <strong>{obra.archivos_recibidos || "-"}</strong>
-          </p>
-          <p>
-            <span>Fecha solicitud:</span>
-            <strong>{obra.fecha_solicitud?.slice(0, 10) || "-"}</strong>
-          </p>
-          <p>
-            <span>Fecha entrega:</span>
-            <strong>{obra.fecha_entrega?.slice(0, 10) || "-"}</strong>
-          </p>
-          <p>
-            <span>Fecha presupuesto:</span>
-            <strong>{obra.fecha_presupuesto?.slice(0, 10) || "-"}</strong>
-          </p>
-          <p>
-            <span>Fecha entregado:</span>
-            <strong>{obra.fecha_entregado?.slice(0, 10) || "-"}</strong>
-          </p>
-          <p>
-            <span>Observación prórroga:</span>
-            <strong>{obra.observacion_prorroga || "-"}</strong>
-          </p>
-          <p>
-            <span>Notas:</span>
-            <strong>{obra.notas_generales || "-"}</strong>
-          </p>
-        </div>
-      </CollapsibleSection>
 
       <section className="obra-summary-grid">
         <article className="obra-summary-card blue">
@@ -300,7 +215,7 @@ function ObraDetallePage({ obra, onBack }) {
 
       <CollapsibleSection
         eyebrow="Configuración"
-        title={tableroEditando ? "Modificar tablero" : "Crear tablero"}
+        title="Crear tablero"
         defaultOpen={true}
       >
         <TableroForm
@@ -328,14 +243,53 @@ function ObraDetallePage({ obra, onBack }) {
           setAgregadoCajaBrazo={setAgregadoCajaBrazo}
           agregadoHEspecial={agregadoHEspecial}
           setAgregadoHEspecial={setAgregadoHEspecial}
+          extraPorVigas={extraPorVigas}
+          setExtraPorVigas={setExtraPorVigas}
           tipoTableroId={tipoTableroId}
           setTipoTableroId={setTipoTableroId}
           onCrear={handleCrearTablero}
           onPrecargar={handleNuevoConAnterior}
-          modo={tableroEditando ? "editar" : "crear"}
-          onCancelarEdicion={limpiarFormularioTablero}
         />
       </CollapsibleSection>
+
+      <section className={`obra-modulos-globales page-card ${modulosObraOpen ? "is-open" : "is-closed"}`}>
+        <button
+          type="button"
+          className="obra-modulos-header"
+          onClick={() => setModulosObraOpen((current) => !current)}
+          aria-expanded={modulosObraOpen}
+        >
+          <span className="obra-modulos-title-wrap">
+            <span className="eyebrow">Módulos de obra</span>
+            <strong>Módulos disponibles</strong>
+          </span>
+          <span className="obra-modulos-count">10 módulos</span>
+          <span className={`collapse-icon ${modulosObraOpen ? "open" : ""}`}>⌄</span>
+        </button>
+
+        {modulosObraOpen && (
+          <div className="detalle-modulos-grid">
+            {[
+              ["resumen-obra", "Resumen general", "Control de obra"],
+              ["canalizaciones", "Canalizaciones", "A1+B1 automático"],
+              ["terminaciones-electrica", "Terminaciones eléctrica", "A2"],
+              ["terminaciones-debiles", "Terminaciones T. débiles", "B2"],
+              ["puesta-a-tierra", "Puesta a tierra", "A3"],
+              ["tableros-materiales", "Tableros materiales", "C1"],
+              ["luminarias", "Luminarias", "E1"],
+              ["bandejas", "Bandejas", "AB1"],
+              ["ductos", "Ductos", "AB2"],
+              ["porteros", "Porteros", "porteros"],
+            ].map(([key, title, desc]) => (
+              <article className="detalle-modulo-card" key={key}>
+                <h4>{title}</h4>
+                <p>{desc}</p>
+                <button className="open-mini-btn blue" onClick={() => abrirModulo(key)}>→ Abrir</button>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <CollapsibleSection
         eyebrow="Listado"
@@ -355,22 +309,6 @@ function ObraDetallePage({ obra, onBack }) {
             tableros={tableros}
             tableroSeleccionado={tableroSeleccionado}
             onVerCircuitos={setTableroSeleccionado}
-            onEditarTablero={handleEditarTablero}
-            onTableroEliminado={(tableroId) => {
-              setTableros((prev) =>
-                prev.filter(
-                  (tablero) => Number(tablero.id) !== Number(tableroId),
-                ),
-              );
-
-              if (Number(tableroSeleccionado?.id) === Number(tableroId)) {
-                setTableroSeleccionado(null);
-              }
-
-              if (Number(tableroEditando?.id) === Number(tableroId)) {
-                limpiarFormularioTablero();
-              }
-            }}
           />
         )}
       </CollapsibleSection>
@@ -381,7 +319,7 @@ function ObraDetallePage({ obra, onBack }) {
           title={`Detalle de ${tableroSeleccionado.nombre}`}
           defaultOpen={true}
         >
-          <TableroDetalle tablero={tableroSeleccionado} />
+          <TableroDetalle tablero={tableroSeleccionado} onOpenModule={abrirModulo} />
         </CollapsibleSection>
       )}
     </div>

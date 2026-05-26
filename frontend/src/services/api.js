@@ -1,153 +1,57 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
-export const getObras = async () => {
-  const res = await fetch(`${API_URL}/obras`);
+const json = async (res) => {
+  if (!res.ok) throw new Error(await res.text());
   return res.json();
 };
 
-export const createObra = async (obra) => {
-  const res = await fetch("http://localhost:3000/api/obras", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(obra),
-  });
+const get = (url) => fetch(`${API_URL}${url}`).then(json);
+const send = (url, method, body) => fetch(`${API_URL}${url}`, {
+  method,
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+}).then(json);
 
-  return res.json();
-};
+export const getObras = () => get("/obras");
+export const createObra = (obra) => send("/obras", "POST", obra);
+export const updateObra = (id, obra) => send(`/obras/${id}`, "PUT", obra);
+export const deleteObra = (id) => send(`/obras/${id}`, "DELETE");
 
-export const getTableros = async (obraId) => {
-  const res = await fetch(`http://localhost:3000/api/tableros/obra/${obraId}`);
-  return res.json();
-};
+export const getTableros = (obraId) => get(`/tableros/obra/${obraId}`);
+export const createTablero = (tablero) => send("/tableros", "POST", tablero);
+export const getLastTablero = (obraId) => get(`/tableros/last/${obraId}`);
 
-export const createTablero = async (tablero) => {
-  const res = await fetch("http://localhost:3000/api/tableros", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(tablero),
-  });
+export const getCircuitos = (tableroId, tipo) => get(`/circuitos/tablero/${tableroId}/${tipo}`);
+export const getCircuitosByObra = (obraId, tipo) => get(`/circuitos/obra/${obraId}/${tipo}`);
+export const createCircuito = (circuito) => send("/circuitos", "POST", circuito);
+export const updateCircuito = (id, cambios) => send(`/circuitos/${id}`, "PUT", cambios);
+export const deleteCircuito = (id) => send(`/circuitos/${id}`, "DELETE");
 
-  return res.json();
-};
+export const getTerminaciones = (obraId, tipo) => get(`/terminaciones/obra/${obraId}/${tipo}`);
+export const upsertTerminacion = (data) => send("/terminaciones", "POST", data);
 
-export const getLastTablero = async (obraId) => {
-  const res = await fetch(`http://localhost:3000/api/tableros/last/${obraId}`);
+export const getPuestaATierra = (obraId) => get(`/puesta-a-tierra/obra/${obraId}`);
+export const upsertPuestaATierra = (data) => send("/puesta-a-tierra", "POST", data);
+export const deletePuestaATierra = (itemId) => send(`/puesta-a-tierra/${itemId}`, "DELETE", {});
 
-  return res.json();
-};
+export const getTablerosMateriales = (obraId) => get(`/tableros-materiales/obra/${obraId}`);
+export const upsertTableroMaterial = (data) => send("/tableros-materiales", "POST", data);
 
-export async function updateObra(id, data) {
-  const response = await fetch(`${API_URL}/obras/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+export const getLuminarias = (obraId) => get(`/luminarias/obra/${obraId}`);
+export const upsertLuminaria = (data) => send("/luminarias", "POST", data);
 
-  if (!response.ok) {
-    throw new Error("No se pudo modificar la obra");
-  }
+export const getBandejas = (obraId) => get(`/bandejas/obra/${obraId}`);
+export const upsertBandeja = (data) => send("/bandejas", "POST", data);
 
-  return response.json();
-}
+export const getDuctos = (obraId) => get(`/ductos/obra/${obraId}`);
+export const upsertDucto = (data) => send("/ductos", "POST", data);
 
-export async function deleteObra(id) {
-  const response = await fetch(`${API_URL}/obras/${id}`, {
-    method: "DELETE",
-  });
+export const getPorteros = (obraId) => get(`/porteros/obra/${obraId}`);
+export const createPortero = (data) => send("/porteros", "POST", data);
+export const updatePortero = (id, data) => send(`/porteros/${id}`, "PUT", data);
+export const deletePortero = (id) => send(`/porteros/${id}`, "DELETE");
 
-  if (!response.ok) {
-    throw new Error("No se pudo eliminar la obra");
-  }
-
-  return response.json();
-}
-
-export async function deleteTablero(id) {
-  const response = await fetch(`${API_URL}/tableros/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error("Error al eliminar tablero");
-  }
-
-  return true;
-}
-
-export async function updateTablero(id, data) {
-  const response = await fetch(`${API_URL}/tableros/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error("Error al modificar tablero");
-  }
-
-  return response.json();
-}
-
-export async function getCircuitosElectricosByTablero(tableroId) {
-  const res = await fetch(
-    `${API_URL}/circuitos-electricos/tablero/${tableroId}`,
-  );
-
-  if (!res.ok) {
-    throw new Error("No se pudieron cargar los circuitos eléctricos");
-  }
-
-  return res.json();
-}
-
-export async function createCircuitoElectrico(data) {
-  const res = await fetch(`${API_URL}/circuitos-electricos`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    throw new Error("No se pudo crear el circuito eléctrico");
-  }
-
-  return res.json();
-}
-
-export async function updateCircuitoElectrico(id, data) {
-  const res = await fetch(`${API_URL}/circuitos-electricos/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    throw new Error("No se pudo modificar el circuito eléctrico");
-  }
-
-  return res.json();
-}
-
-export async function deleteCircuitoElectrico(id) {
-  const res = await fetch(`${API_URL}/circuitos-electricos/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    throw new Error("No se pudo eliminar el circuito eléctrico");
-  }
-
-  return res.json();
-}
+export const getTerminacionesCatalogo = (tipo) => get(`/catalogos/terminaciones/${tipo}`);
+export const createTerminacionCatalogo = (tipo, data) => send(`/catalogos/terminaciones/${tipo}`, "POST", data);
+export const updateTerminacionCatalogo = (tipo, id, data) => send(`/catalogos/terminaciones/${tipo}/${id}`, "PUT", data);
+export const deleteTerminacionCatalogo = (tipo, id) => send(`/catalogos/terminaciones/${tipo}/${id}`, "DELETE", {});

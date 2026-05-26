@@ -35,6 +35,9 @@ function TableroForm({
   agregadoHEspecial,
   setAgregadoHEspecial,
 
+  extraPorVigas,
+  setExtraPorVigas,
+
   tipoTableroId,
   setTipoTableroId,
 
@@ -161,6 +164,16 @@ function TableroForm({
             step="0.01"
             value={agregadoHEspecial}
             onChange={(e) => setAgregadoHEspecial(e.target.value)}
+          />
+        </div>
+
+        <div className="form-field">
+          <label>Extra por vigas</label>
+          <input
+            type="number"
+            step="0.01"
+            value={extraPorVigas}
+            onChange={(e) => setExtraPorVigas(e.target.value)}
           />
         </div>
 

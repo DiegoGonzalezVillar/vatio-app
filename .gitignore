@@ -1,14 +1,31 @@
 # dependencies
-node_modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/
 
-# env
+# env / secrets
 .env
+.env.*
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
 
 # logs
 npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+*.log
 
 # build
-dist
+dist/
+build/
+frontend/dist/
+backend/dist/
+
+# cache
+.vite/
+.cache/
 
 # OS
 .DS_Store
