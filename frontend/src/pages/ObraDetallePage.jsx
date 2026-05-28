@@ -11,7 +11,7 @@ import EmptyState from "../components/ui/EmptyState";
 
 import CollapsibleSection from "../components/ui/CollapsibleSection";
 import CircuitosPage from "./CircuitosPage";
-import CanalizacionesPage from "./CanalizacionesPage";
+/*import CanalizacionesPage from "./CanalizacionesPage";
 import TerminacionesPage from "./TerminacionesPage";
 import PuestaATierraPage from "./PuestaATierraPage";
 import TablerosMaterialesPage from "./TablerosMaterialesPage";
@@ -19,15 +19,14 @@ import LuminariasPage from "./LuminariasPage";
 import BandejasPage from "./BandejasPage";
 import DuctosPage from "./DuctosPage";
 import PorterosPage from "./PorterosPage";
-import ObraResumenPage from "./ObraResumenPage";
-
+import ObraResumenPage from "./ObraResumenPage";*/
 
 function ObraDetallePage({ obra, onBack }) {
   const [tableros, setTableros] = useState([]);
   const [tableroSeleccionado, setTableroSeleccionado] = useState(null);
   const [moduloActivo, setModuloActivo] = useState(null);
   const [tableroModulo, setTableroModulo] = useState(null);
-  const [modulosObraOpen, setModulosObraOpen] = useState(true);
+  //const [modulosObraOpen, setModulosObraOpen] = useState(true);
 
   const [nombreTablero, setNombreTablero] = useState("");
   const [alturaLocal, setAlturaLocal] = useState("");
@@ -159,10 +158,25 @@ function ObraDetallePage({ obra, onBack }) {
   }
 
   if (moduloActivo) {
-    const propsObra = { obra, onBack: cerrarModulo };
-    if (moduloActivo === "circuitos-electrica") return <CircuitosPage tablero={tableroModulo} tipo="electrica" onBack={cerrarModulo} />;
-    if (moduloActivo === "circuitos-debiles") return <CircuitosPage tablero={tableroModulo} tipo="debiles" onBack={cerrarModulo} />;
-    if (moduloActivo === "canalizaciones") return <CanalizacionesPage {...propsObra} />;
+    //const propsObra = { obra, onBack: cerrarModulo };
+    if (moduloActivo === "circuitos-electrica")
+      return (
+        <CircuitosPage
+          tablero={tableroModulo}
+          tipo="electrica"
+          onBack={cerrarModulo}
+        />
+      );
+    if (moduloActivo === "circuitos-debiles")
+      return (
+        <CircuitosPage
+          tablero={tableroModulo}
+          tipo="debiles"
+          onBack={cerrarModulo}
+        />
+      );
+    {
+      /*if (moduloActivo === "canalizaciones") return <CanalizacionesPage {...propsObra} />;
     if (moduloActivo === "terminaciones-electrica") return <TerminacionesPage obra={obra} tipo="electrica" onBack={cerrarModulo} />;
     if (moduloActivo === "terminaciones-debiles") return <TerminacionesPage obra={obra} tipo="debiles" onBack={cerrarModulo} />;
     if (moduloActivo === "puesta-a-tierra") return <PuestaATierraPage {...propsObra} />;
@@ -171,7 +185,8 @@ function ObraDetallePage({ obra, onBack }) {
     if (moduloActivo === "bandejas") return <BandejasPage {...propsObra} />;
     if (moduloActivo === "ductos") return <DuctosPage {...propsObra} />;
     if (moduloActivo === "porteros") return <PorterosPage {...propsObra} />;
-    if (moduloActivo === "resumen-obra") return <ObraResumenPage {...propsObra} />;
+    if (moduloActivo === "resumen-obra") return <ObraResumenPage {...propsObra} />;*/
+    }
   }
 
   return (
@@ -251,7 +266,7 @@ function ObraDetallePage({ obra, onBack }) {
           onPrecargar={handleNuevoConAnterior}
         />
       </CollapsibleSection>
-
+      {/*
       <section className={`obra-modulos-globales page-card ${modulosObraOpen ? "is-open" : "is-closed"}`}>
         <button
           type="button"
@@ -289,7 +304,7 @@ function ObraDetallePage({ obra, onBack }) {
             ))}
           </div>
         )}
-      </section>
+      </section>*/}
 
       <CollapsibleSection
         eyebrow="Listado"
@@ -319,7 +334,10 @@ function ObraDetallePage({ obra, onBack }) {
           title={`Detalle de ${tableroSeleccionado.nombre}`}
           defaultOpen={true}
         >
-          <TableroDetalle tablero={tableroSeleccionado} onOpenModule={abrirModulo} />
+          <TableroDetalle
+            tablero={tableroSeleccionado}
+            onOpenModule={abrirModulo}
+          />
         </CollapsibleSection>
       )}
     </div>

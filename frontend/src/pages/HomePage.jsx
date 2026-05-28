@@ -65,7 +65,7 @@ function HomePage({ onGoObras, onVerObra }) {
           <span className="module-arrow">→</span>
         </button>
 
-        <button className="module-card">
+        {/*<button className="module-card">
           <div className="module-icon module-orange">⚡</div>
           <div>
             <h3>Tableros</h3>
@@ -81,7 +81,7 @@ function HomePage({ onGoObras, onVerObra }) {
             <p>Consolidar materiales y metrados por obra.</p>
           </div>
           <span className="module-arrow">→</span>
-        </button>
+        </button>*/}
       </section>
 
       <section className="recent-section">

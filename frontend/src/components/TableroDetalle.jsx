@@ -79,7 +79,7 @@ function TableroDetalle({ tablero, onOpenModule }) {
     },
   ];
 
-  const modulos = [
+  /*const modulos = [
     { title: "Circuitos eléctrica", description: "Metrado A1 por tablero.", icon: "⚡", color: "blue", module: "circuitos-electrica" },
     { title: "Circuitos débiles", description: "Metrado B1 por tablero.", icon: "⌁", color: "green", module: "circuitos-debiles" },
 
@@ -87,6 +87,16 @@ function TableroDetalle({ tablero, onOpenModule }) {
     { title: "Ductos", description: "AB2 por obra.", icon: "◫", color: "orange", module: "ductos" },
     { title: "Luminarias", description: "E1 por obra.", icon: "✦", color: "purple", module: "luminarias" },
     { title: "Tableros materiales", description: "C1 accesorios internos.", icon: "◩", color: "blue", module: "tableros-materiales" },
+  ];*/
+
+  const modulos = [
+    {
+      title: "Circuitos eléctrica",
+      description: "Metrado A1 por tablero.",
+      icon: "⚡",
+      color: "blue",
+      module: "circuitos-electrica",
+    },
   ];
 
   return (
