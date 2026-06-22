@@ -23,6 +23,11 @@ export const CONDUCTORES_DEBILES = [
   "2 Pares", "4 Pares", "Portero", "Cat 5", "Cat 6", "CCTV", "TV", "Incendio", "Intrusión",
 ];
 
+export const CONDUCTORES_POR_TIPO = {
+  electrica: CONDUCTORES_ELECTRICA,
+  debiles: CONDUCTORES_DEBILES,
+};
+
 export const TERMINACIONES_ELECTRICA = [
   { titulo: "CÁMARAS" },
   { item: "Cámara 20 x 20", tipo_caja: "CAMARA", materiales: ["GENERAL"] },

@@ -29,6 +29,17 @@ CREATE TABLE IF NOT EXISTS circuitos (
   codos_especiales INT DEFAULT 0,
   bandeja_metros DECIMAL(10,2) DEFAULT 0,
   conductor VARCHAR(40),
+  incluye_bajada_tablero BOOLEAN DEFAULT true,
+  conductor_metros DECIMAL(10,3) DEFAULT 0,
+  conductor_cantidad DECIMAL(10,3) DEFAULT 1,
+  conductor_bandeja VARCHAR(40),
+  conductor_bandeja_metros DECIMAL(10,3) DEFAULT 0,
+  conductor_bandeja_cantidad DECIMAL(10,3) DEFAULT 0,
+  codos_pvc DECIMAL(10,3) DEFAULT 0,
+  codos_galvanizado DECIMAL(10,3) DEFAULT 0,
+  uniones_pvc DECIMAL(10,3) DEFAULT 0,
+  uniones_galvanizado DECIMAL(10,3) DEFAULT 0,
+  uniones_bandeja DECIMAL(10,3) DEFAULT 0,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -179,3 +190,20 @@ ALTER TABLE terminaciones
 
 ALTER TABLE catalogos_items
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
+
+
+-- Ajustes 2026-06-22: B1 usa el mismo motor que A1 con tipo electrica/debiles,
+-- bajada a tablero controlable y desglose de conductores/accesorios para validación Excel.
+ALTER TABLE circuitos
+  ADD COLUMN IF NOT EXISTS tipo VARCHAR(10) DEFAULT 'electrica',
+  ADD COLUMN IF NOT EXISTS incluye_bajada_tablero BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS conductor_metros DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS conductor_cantidad DECIMAL(10,3) DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS conductor_bandeja VARCHAR(40),
+  ADD COLUMN IF NOT EXISTS conductor_bandeja_metros DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS conductor_bandeja_cantidad DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS codos_pvc DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS codos_galvanizado DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS uniones_pvc DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS uniones_galvanizado DECIMAL(10,3) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS uniones_bandeja DECIMAL(10,3) DEFAULT 0;

@@ -28,6 +28,17 @@ const fields = [
   "codos_especiales",
   "bandeja_metros",
   "conductor",
+  "incluye_bajada_tablero",
+  "conductor_metros",
+  "conductor_cantidad",
+  "conductor_bandeja",
+  "conductor_bandeja_metros",
+  "conductor_bandeja_cantidad",
+  "codos_pvc",
+  "codos_galvanizado",
+  "uniones_pvc",
+  "uniones_galvanizado",
+  "uniones_bandeja",
   "detalle_tecnico",
 ];
 
@@ -54,7 +65,18 @@ const numericFields = new Set([
   "cable_metros",
   "codos_especiales",
   "bandeja_metros",
+  "conductor_metros",
+  "conductor_cantidad",
+  "conductor_bandeja_metros",
+  "conductor_bandeja_cantidad",
+  "codos_pvc",
+  "codos_galvanizado",
+  "uniones_pvc",
+  "uniones_galvanizado",
+  "uniones_bandeja",
 ]);
+
+const booleanFields = new Set(["incluye_bajada_tablero"]);
 
 const parseNumericValue = (value) => {
   if (value === undefined || value === null || value === "") return 0;
@@ -86,6 +108,11 @@ const cleanValue = (field, value) => {
 
   if (numericFields.has(field)) {
     return parseNumericValue(value);
+  }
+
+  if (booleanFields.has(field)) {
+    if (value === undefined || value === null || value === "") return true;
+    return value !== false && value !== "false" && value !== 0 && value !== "0";
   }
 
   return value ?? null;

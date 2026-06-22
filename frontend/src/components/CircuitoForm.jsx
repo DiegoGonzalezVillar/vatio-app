@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CONDUCTORES_DEBILES, CONDUCTORES_ELECTRICA, DIAMETROS_POR_TIPO, TIPOS_CONDUCTOR_CANALIZACION } from "../utils/vatioConstants";
+import { CONDUCTORES_POR_TIPO, DIAMETROS_POR_TIPO, TIPOS_CONDUCTOR_CANALIZACION } from "../utils/vatioConstants";
 import { calcularDatosDerivadosCircuito, prepararCircuitoParaGuardar } from "../utils/calculosCircuitos";
 import { formatDecimal } from "../utils/format";
 import CircuitoDetalleTecnico from "./CircuitoDetalleTecnico";
@@ -25,6 +25,17 @@ const initial = {
   zanja_m: "",
   detalle_tecnico: null,
   conductor: "",
+  incluye_bajada_tablero: true,
+  conductor_metros: "",
+  conductor_cantidad: 1,
+  conductor_bandeja: "",
+  conductor_bandeja_metros: "",
+  conductor_bandeja_cantidad: "",
+  codos_pvc: "",
+  codos_galvanizado: "",
+  uniones_pvc: "",
+  uniones_galvanizado: "",
+  uniones_bandeja: "",
 };
 
 const CAMPOS_ENTRADA = [
@@ -71,13 +82,24 @@ const normalizarCircuitoParaFormulario = (circuito) => {
     zanja_m: circuito.zanja_m ?? "",
     detalle_tecnico: circuito.detalle_tecnico ?? null,
     conductor: circuito.conductor ?? "",
+    incluye_bajada_tablero: circuito.incluye_bajada_tablero !== false,
+    conductor_metros: circuito.conductor_metros ?? "",
+    conductor_cantidad: circuito.conductor_cantidad ?? 1,
+    conductor_bandeja: circuito.conductor_bandeja ?? "",
+    conductor_bandeja_metros: circuito.conductor_bandeja_metros ?? "",
+    conductor_bandeja_cantidad: circuito.conductor_bandeja_cantidad ?? "",
+    codos_pvc: circuito.codos_pvc ?? "",
+    codos_galvanizado: circuito.codos_galvanizado ?? "",
+    uniones_pvc: circuito.uniones_pvc ?? "",
+    uniones_galvanizado: circuito.uniones_galvanizado ?? "",
+    uniones_bandeja: circuito.uniones_bandeja ?? "",
   };
 };
 
 function CircuitoForm({ tipo, tablero, onSubmit, editingCircuito, onCancelEdit }) {
   const [form, setForm] = useState(initial);
   const isEditing = Boolean(editingCircuito?.id);
-  const conductores = tipo === "debiles" ? CONDUCTORES_DEBILES : CONDUCTORES_ELECTRICA;
+  const conductores = CONDUCTORES_POR_TIPO[tipo] || CONDUCTORES_POR_TIPO.electrica;
   const diametros = useMemo(() => DIAMETROS_POR_TIPO[form.tipo_conductor] || [], [form.tipo_conductor]);
   const derivados = useMemo(() => calcularDatosDerivadosCircuito(form, tablero), [form, tablero]);
   const detalleActivo = Boolean(form.detalle_tecnico);
@@ -99,11 +121,11 @@ function CircuitoForm({ tipo, tablero, onSubmit, editingCircuito, onCancelEdit }
   const guardar = async (e) => {
     e.preventDefault();
     await onSubmit(prepararCircuitoParaGuardar(form, tablero));
-    setForm(initial);
+    setForm({ ...initial, incluye_bajada_tablero: true });
   };
 
   const cancelar = () => {
-    setForm(initial);
+    setForm({ ...initial, incluye_bajada_tablero: true });
     onCancelEdit?.();
   };
 
@@ -120,6 +142,15 @@ function CircuitoForm({ tipo, tablero, onSubmit, editingCircuito, onCancelEdit }
       <select value={form.tipo_conductor} onChange={(e) => set("tipo_conductor", e.target.value)}>{TIPOS_CONDUCTOR_CANALIZACION.map((t) => <option key={t}>{t}</option>)}</select>
       <select value={form.diametro} onChange={(e) => set("diametro", e.target.value)}>{diametros.map((d) => <option key={d}>{d}</option>)}</select>
       <select value={form.conductor} onChange={(e) => set("conductor", e.target.value)}><option value="">Conductor</option>{conductores.map((c) => <option key={c}>{c}</option>)}</select>
+
+      <label className="checkbox-field">
+        <span>Incluir bajada a tablero</span>
+        <input
+          type="checkbox"
+          checked={form.incluye_bajada_tablero}
+          onChange={(e) => set("incluye_bajada_tablero", e.target.checked)}
+        />
+      </label>
 
       <div className="form-full-row carga-rapida-panel">
         <div className="carga-rapida-head">
@@ -138,6 +169,26 @@ function CircuitoForm({ tipo, tablero, onSubmit, editingCircuito, onCancelEdit }
             ))}
           </div>
         )}
+      </div>
+
+      <div className="form-full-row carga-rapida-panel">
+        <div className="carga-rapida-head">
+          <div>
+            <strong>Conductores y accesorios</strong>
+            <p>Permite separar metros/cantidad de conductor y discriminar codos/uniones para el resumen contra Excel.</p>
+          </div>
+        </div>
+        <div className="carga-rapida-grid">
+          <input inputMode="decimal" placeholder="metros conductor" value={form.conductor_metros} onChange={(e) => set("conductor_metros", e.target.value)} />
+          <input inputMode="decimal" placeholder="cantidad conductor" value={form.conductor_cantidad} onChange={(e) => set("conductor_cantidad", e.target.value)} />
+          <input inputMode="decimal" placeholder="metros conductor bandeja" value={form.conductor_bandeja_metros} onChange={(e) => set("conductor_bandeja_metros", e.target.value)} />
+          <input inputMode="decimal" placeholder="cantidad conductor bandeja" value={form.conductor_bandeja_cantidad} onChange={(e) => set("conductor_bandeja_cantidad", e.target.value)} />
+          <input inputMode="decimal" placeholder="codos PVC" value={form.codos_pvc} onChange={(e) => set("codos_pvc", e.target.value)} />
+          <input inputMode="decimal" placeholder="codos galvanizado" value={form.codos_galvanizado} onChange={(e) => set("codos_galvanizado", e.target.value)} />
+          <input inputMode="decimal" placeholder="uniones PVC" value={form.uniones_pvc} onChange={(e) => set("uniones_pvc", e.target.value)} />
+          <input inputMode="decimal" placeholder="uniones galvanizado" value={form.uniones_galvanizado} onChange={(e) => set("uniones_galvanizado", e.target.value)} />
+          <input inputMode="decimal" placeholder="uniones bandeja" value={form.uniones_bandeja} onChange={(e) => set("uniones_bandeja", e.target.value)} />
+        </div>
       </div>
 
       <div className="calc-preview"><span>Caño losa</span><strong>{formatDecimal(derivados.caño_losa, 3)}</strong></div>

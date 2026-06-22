@@ -1,9 +1,10 @@
 import { formatDecimal } from "../utils/format";
-const MEDIDA_COLS = new Set(["x_cano_losa", "caño_losa", "caño_pared", "caño_piso", "cable_metros", "bandeja_metros", "picada_yeso_m", "picada_mamposteria_m", "picada_piso_m", "zanja_m"]);
+const MEDIDA_COLS = new Set(["x_cano_losa", "caño_losa", "caño_pared", "caño_piso", "cable_metros", "bandeja_metros", "picada_yeso_m", "picada_mamposteria_m", "picada_piso_m", "zanja_m", "conductor_metros", "conductor_bandeja_metros"]);
 
 const fmt = (col, value) => {
   if (value === null || value === undefined || value === "") return "";
   if (col === "detalle_tecnico") return value ? "Detalle" : "";
+  if (col === "incluye_bajada_tablero") return value === false ? "No" : "Sí";
   if (MEDIDA_COLS.has(col)) return formatDecimal(value, 3);
   return value;
 };
@@ -35,6 +36,17 @@ function CircuitosGrid({ circuitos, onDelete, onDuplicar, onEditar }) {
     "cable_metros",
     "bandeja_metros",
     "conductor",
+    "incluye_bajada_tablero",
+    "conductor_metros",
+    "conductor_cantidad",
+    "conductor_bandeja",
+    "conductor_bandeja_metros",
+    "conductor_bandeja_cantidad",
+    "codos_pvc",
+    "codos_galvanizado",
+    "uniones_pvc",
+    "uniones_galvanizado",
+    "uniones_bandeja",
     "detalle_tecnico",
   ];
 
