@@ -4,13 +4,22 @@ import { DIAMETROS } from "./vatioConstants";
 const n = (value) => parseDecimalValue(value, 0);
 const round3 = (value) => Number(n(value).toFixed(3));
 const picada = (value) => (value === true ? 1 : n(value));
-const baseDiametros = () => DIAMETROS.reduce((acc, d) => ({ ...acc, [d]: 0 }), {});
+const baseDiametros = () =>
+  DIAMETROS.reduce((acc, d) => ({ ...acc, [d]: 0 }), {});
 
 export const crearTotalesCircuitosVacios = () => ({
-  cp: 0, ch: 0, cll: 0, cc: 0, cb: 0,
-  bajadas_tomas: 0, bajadas_tomas_picadas: 0,
-  bajadas_luces: 0, bajadas_luces_picadas: 0,
-  cable_metros: 0, codos_especiales: 0, bandeja_metros: 0,
+  cp: 0,
+  ch: 0,
+  cll: 0,
+  cc: 0,
+  cb: 0,
+  bajadas_tomas: 0,
+  bajadas_tomas_picadas: 0,
+  bajadas_luces: 0,
+  bajadas_luces_picadas: 0,
+  cable_metros: 0,
+  codos_especiales: 0,
+  bandeja_metros: 0,
   conductor_metros: 0,
   conductor_cantidad: 0,
   conductor_bandeja_metros: 0,
@@ -25,9 +34,12 @@ export const crearTotalesCircuitosVacios = () => ({
   picada_mamposteria_m: 0,
   picada_piso_m: 0,
   zanja_m: 0,
-  corrugado_losa: baseDiametros(), corrugado_pared: baseDiametros(),
-  galvanizado_losa: baseDiametros(), galvanizado_pared: baseDiametros(),
-  pvc_losa: baseDiametros(), pvc_pared: baseDiametros(),
+  corrugado_losa: baseDiametros(),
+  corrugado_pared: baseDiametros(),
+  galvanizado_losa: baseDiametros(),
+  galvanizado_pared: baseDiametros(),
+  pvc_losa: baseDiametros(),
+  pvc_pared: baseDiametros(),
   conductores: {},
   conductores_detalle: {},
   conductores_bandeja: {},
@@ -40,15 +52,20 @@ const grupoCaneria = (tipo) => {
   return null;
 };
 
-const tipoCanalizacionNormalizado = (circuito = {}) => String(
-  circuito.tipo_canalizacion || circuito.tipo_conductor || "",
-).toLowerCase();
+const tipoCanalizacionNormalizado = (circuito = {}) =>
+  String(
+    circuito.tipo_canalizacion || circuito.tipo_conductor || "",
+  ).toLowerCase();
 
 const codosPorTipoCanalizacion = (circuito = {}, tipo) => {
   const tipoCanalizacion = tipoCanalizacionNormalizado(circuito);
   const codos = n(circuito.codos_especiales);
   if (tipo === "pvc") return tipoCanalizacion.includes("pvc") ? codos : 0;
-  if (tipo === "galvanizado") return tipoCanalizacion.includes("galva") || tipoCanalizacion.includes("galvanizado") ? codos : 0;
+  if (tipo === "galvanizado")
+    return tipoCanalizacion.includes("galva") ||
+      tipoCanalizacion.includes("galvanizado")
+      ? codos
+      : 0;
   return 0;
 };
 
@@ -58,17 +75,28 @@ const accesorioMatches = (accesorio = {}, nombre, material) => {
   return acc === nombre.toLowerCase() && mat === material.toLowerCase();
 };
 
-const sumarAccesorios = (accesorios = [], nombre, material) => accesorios
-  .filter((a) => accesorioMatches(a, nombre, material))
-  .reduce((acc, a) => acc + n(a.cantidad), 0);
+const sumarAccesorios = (accesorios = [], nombre, material) =>
+  accesorios
+    .filter((a) => accesorioMatches(a, nombre, material))
+    .reduce((acc, a) => acc + n(a.cantidad), 0);
 
 export const calcularAccesoriosCircuito = (entrada = {}) => {
-  const accesorios = Array.isArray(entrada.accesorios) ? entrada.accesorios : [];
+  const accesorios = Array.isArray(entrada.accesorios)
+    ? entrada.accesorios
+    : [];
 
-  const codosPvc = accesorios.length ? sumarAccesorios(accesorios, "Curva", "PVC") : codosPorTipoCanalizacion(entrada, "pvc");
-  const codosGalvanizado = accesorios.length ? sumarAccesorios(accesorios, "Curva", "Galvanizado") : codosPorTipoCanalizacion(entrada, "galvanizado");
-  const unionesPvc = accesorios.length ? sumarAccesorios(accesorios, "Cupla", "PVC") : n(entrada.uniones_pvc);
-  const unionesGalvanizado = accesorios.length ? sumarAccesorios(accesorios, "Cupla", "Galvanizado") : n(entrada.uniones_galvanizado);
+  const codosPvc = accesorios.length
+    ? sumarAccesorios(accesorios, "Curva", "PVC")
+    : codosPorTipoCanalizacion(entrada, "pvc");
+  const codosGalvanizado = accesorios.length
+    ? sumarAccesorios(accesorios, "Curva", "Galvanizado")
+    : codosPorTipoCanalizacion(entrada, "galvanizado");
+  const unionesPvc = accesorios.length
+    ? sumarAccesorios(accesorios, "Cupla", "PVC")
+    : n(entrada.uniones_pvc);
+  const unionesGalvanizado = accesorios.length
+    ? sumarAccesorios(accesorios, "Cupla", "Galvanizado")
+    : n(entrada.uniones_galvanizado);
 
   return {
     codos_pvc: n(entrada.codos_pvc) || codosPvc,
@@ -98,8 +126,11 @@ export const alturasTablero = (tablero = {}) => {
 };
 
 export const calcularDetalleTecnicoLegacy = (detalle = {}, tablero = {}) => {
-  const { bajadaLlaveLuzM, bajadaTomaM, bajadaBrazoM, bajadaEspecialM } = alturasTablero(tablero);
-  const canalizaciones = Array.isArray(detalle?.canalizaciones) ? detalle.canalizaciones : [];
+  const { bajadaLlaveLuzM, bajadaTomaM, bajadaBrazoM, bajadaEspecialM } =
+    alturasTablero(tablero);
+  const canalizaciones = Array.isArray(detalle?.canalizaciones)
+    ? detalle.canalizaciones
+    : [];
 
   const out = {
     caño_losa: 0,
@@ -123,8 +154,12 @@ export const calcularDetalleTecnicoLegacy = (detalle = {}, tablero = {}) => {
     const cano = canalizacion?.cano || canalizacion || {};
     const metros = n(cano.metros ?? cano.metrosComposicion);
     const instalacion = String(cano.instalacion ?? "");
-    const subinstalacion = String(cano.subinstalacion ?? cano.subinstalar ?? "");
-    const yesoMuro = String(cano.yesomuro ?? cano.yeso_muro ?? "").toLowerCase();
+    const subinstalacion = String(
+      cano.subinstalacion ?? cano.subinstalar ?? "",
+    );
+    const yesoMuro = String(
+      cano.yesomuro ?? cano.yeso_muro ?? "",
+    ).toLowerCase();
     const picadaZanja = Boolean(cano.picadazanja ?? cano.picado ?? cano.zanja);
 
     if (["1", "2", "3", "6"].includes(instalacion)) {
@@ -133,8 +168,15 @@ export const calcularDetalleTecnicoLegacy = (detalle = {}, tablero = {}) => {
     } else if (instalacion === "4") {
       out.caño_pared += metros;
       if (subinstalacion === "6") {
-        if (yesoMuro === "yeso" || n(cano.yeso) > 0) out.picada_yeso_m += metros;
-        if (yesoMuro === "muro" || yesoMuro === "mamposteria" || yesoMuro === "mampostería" || n(cano.muro) > 0) out.picada_mamposteria_m += metros;
+        if (yesoMuro === "yeso" || n(cano.yeso) > 0)
+          out.picada_yeso_m += metros;
+        if (
+          yesoMuro === "muro" ||
+          yesoMuro === "mamposteria" ||
+          yesoMuro === "mampostería" ||
+          n(cano.muro) > 0
+        )
+          out.picada_mamposteria_m += metros;
       }
     } else if (instalacion === "5") {
       out.caño_piso += metros;
@@ -144,18 +186,25 @@ export const calcularDetalleTecnicoLegacy = (detalle = {}, tablero = {}) => {
 
     out.cable_horizontal_m += metros;
 
-    const bajadas = Array.isArray(canalizacion?.canoBajada) ? canalizacion.canoBajada : [];
+    const bajadas = Array.isArray(canalizacion?.canoBajada)
+      ? canalizacion.canoBajada
+      : [];
     bajadas.forEach((bajada) => {
       const tipoBajada = n(bajada.tipoBajada ?? bajada.tipo_bajada);
       const cantidad = n(bajada.cantidad);
       const picadas = n(bajada.picadas);
       const material = n(bajada.material);
       const cantCodos = n(bajada.cantCodos ?? bajada.codos);
-      const altura = tipoBajada === 1 ? bajadaLlaveLuzM
-        : tipoBajada === 2 ? bajadaTomaM
-        : tipoBajada === 3 ? bajadaBrazoM
-        : tipoBajada === 4 ? bajadaEspecialM
-        : 0;
+      const altura =
+        tipoBajada === 1
+          ? bajadaLlaveLuzM
+          : tipoBajada === 2
+            ? bajadaTomaM
+            : tipoBajada === 3
+              ? bajadaBrazoM
+              : tipoBajada === 4
+                ? bajadaEspecialM
+                : 0;
 
       if (tipoBajada === 1) out.bajadas_luces += cantidad;
       if (tipoBajada === 2) out.bajadas_tomas += cantidad;
@@ -171,21 +220,34 @@ export const calcularDetalleTecnicoLegacy = (detalle = {}, tablero = {}) => {
     });
   });
 
-  return Object.fromEntries(Object.entries(out).map(([k, v]) => [k, round3(v)]));
+  return Object.fromEntries(
+    Object.entries(out).map(([k, v]) => [k, round3(v)]),
+  );
 };
 
 const calcularPicadasSimplificadas = (entrada = {}, tablero = {}) => {
   const { bajadaLlaveLuzM, bajadaTomaM } = alturasTablero(tablero);
   return {
-    picada_yeso_m: round3(picada(entrada.bajada_luces_picadas) * bajadaLlaveLuzM),
-    picada_mamposteria_m: round3(picada(entrada.bajada_tomas_picadas) * bajadaTomaM),
+    picada_yeso_m: round3(
+      picada(entrada.bajada_luces_picadas) * bajadaLlaveLuzM,
+    ),
+    picada_mamposteria_m: round3(
+      picada(entrada.bajada_tomas_picadas) * bajadaTomaM,
+    ),
   };
 };
 
 export const calcularDatosDerivadosCircuito = (entrada = {}, tablero = {}) => {
-  const detalle = typeof entrada.detalle_tecnico === "string"
-    ? (() => { try { return JSON.parse(entrada.detalle_tecnico); } catch { return null; } })()
-    : entrada.detalle_tecnico;
+  const detalle =
+    typeof entrada.detalle_tecnico === "string"
+      ? (() => {
+          try {
+            return JSON.parse(entrada.detalle_tecnico);
+          } catch {
+            return null;
+          }
+        })()
+      : entrada.detalle_tecnico;
 
   if (detalle?.canalizaciones?.length) {
     const legacy = calcularDetalleTecnicoLegacy(detalle, tablero);
@@ -204,10 +266,17 @@ export const calcularDatosDerivadosCircuito = (entrada = {}, tablero = {}) => {
     };
   }
 
-  const { bajadaLlaveLuzM, bajadaTomaM, bajadaTableroM } = alturasTablero(tablero);
-  const agregadoLlave = n(tablero.agregado_caja_centro ?? tablero.agregadoCajaCentro);
-  const agregadoToma = n(tablero.agregado_caja_honda ?? tablero.agregadoCajaHonda);
-  const agregadoTablero = n(tablero.agregado_tablero ?? tablero.AgregadoTablero);
+  const { bajadaLlaveLuzM, bajadaTomaM, bajadaTableroM } =
+    alturasTablero(tablero);
+  const agregadoLlave = n(
+    tablero.agregado_caja_centro ?? tablero.agregadoCajaCentro,
+  );
+  const agregadoToma = n(
+    tablero.agregado_caja_honda ?? tablero.agregadoCajaHonda,
+  );
+  const agregadoTablero = n(
+    tablero.agregado_tablero ?? tablero.AgregadoTablero,
+  );
   const extraVigas = n(tablero.extra_por_vigas);
   const incluyeBajadaTablero = entrada.incluye_bajada_tablero !== false;
 
@@ -226,23 +295,27 @@ export const calcularDatosDerivadosCircuito = (entrada = {}, tablero = {}) => {
   const bajadaTableroCable = incluyeBajadaTablero ? bajadaTableroM : 0;
   const agregadoTableroCable = incluyeBajadaTablero ? agregadoTablero : 0;
 
-  const canoLosa = xCanoLosa + extraVigas + bajadaTomas * extraVigas + bajadaLuces * extraVigas;
-  const canoPared = bajadaTomas * Math.max(bajadaTomaM - extraVigas, 0)
-    + bajadaLuces * Math.max(bajadaLlaveLuzM - extraVigas, 0)
-    + enSaltosPared
-    + bajadaTableroCano;
+  const canoLosa =
+    xCanoLosa +
+    extraVigas +
+    bajadaTomas * extraVigas +
+    bajadaLuces * extraVigas;
+  const canoPared =
+    bajadaTomas * Math.max(bajadaTomaM - extraVigas, 0) +
+    bajadaLuces * Math.max(bajadaLlaveLuzM - extraVigas, 0) +
+    enSaltosPared +
+    bajadaTableroCano;
 
-  const cableMetros = entrada.numero
-    ? xBandeja
-      + xCanoLosa
-      + enSaltosPared
-      + (cajaPiso + cajaHonda) * agregadoToma
-      + bajadaTomas * bajadaTomaM
-      + (cajaLlana + cajaCentro + cajaBrazo) * agregadoLlave
-      + bajadaLuces * bajadaLlaveLuzM
-      + agregadoTableroCable
-      + bajadaTableroCable
-    : 0;
+  const cableMetros =
+    xBandeja +
+    xCanoLosa +
+    enSaltosPared +
+    (cajaPiso + cajaHonda) * agregadoToma +
+    bajadaTomas * bajadaTomaM +
+    (cajaLlana + cajaCentro + cajaBrazo) * agregadoLlave +
+    bajadaLuces * bajadaLlaveLuzM +
+    agregadoTableroCable +
+    bajadaTableroCable;
 
   const picadas = calcularPicadasSimplificadas(entrada, tablero);
 
@@ -264,13 +337,21 @@ export const calcularDatosDerivadosCircuito = (entrada = {}, tablero = {}) => {
 export const prepararCircuitoParaGuardar = (entrada = {}, tablero = {}) => {
   const derivados = calcularDatosDerivadosCircuito(entrada, tablero);
   const accesorios = calcularAccesoriosCircuito(entrada);
-  const salePorBandeja = entrada.salida_por_bandeja === true || n(entrada.bandeja_metros || entrada.bandeja) > 0 || entrada.tipo_conductor === "X BANDEJA";
+  const salePorBandeja =
+    entrada.salida_por_bandeja === true ||
+    n(entrada.bandeja_metros || entrada.bandeja) > 0 ||
+    entrada.tipo_conductor === "X BANDEJA";
   const conductor = entrada.conductor || "";
   const conductorMetros = n(entrada.conductor_metros) || derivados.cable_metros;
-  const conductorCantidad = n(entrada.conductor_cantidad) || (conductor ? 1 : 0);
+  const conductorCantidad =
+    n(entrada.conductor_cantidad) || (conductor ? 1 : 0);
   const conductorBandeja = entrada.conductor_bandeja || conductor;
-  const conductorBandejaMetros = n(entrada.conductor_bandeja_metros) || n(entrada.bandeja_metros || entrada.bandeja);
-  const conductorBandejaCantidad = n(entrada.conductor_bandeja_cantidad) || (salePorBandeja && conductorBandeja ? 1 : 0);
+  const conductorBandejaMetros =
+    n(entrada.conductor_bandeja_metros) ||
+    n(entrada.bandeja_metros || entrada.bandeja);
+  const conductorBandejaCantidad =
+    n(entrada.conductor_bandeja_cantidad) ||
+    (salePorBandeja && conductorBandeja ? 1 : 0);
 
   return {
     ...entrada,
@@ -304,7 +385,9 @@ export function resumirConductores(circuitos = []) {
         acc[conductor] = { metros: 0, cantidad: 0 };
       }
 
-      acc[conductor].metros += n(circuito.conductor_metros || circuito.cable_metros);
+      acc[conductor].metros += n(
+        circuito.conductor_metros || circuito.cable_metros,
+      );
       acc[conductor].cantidad += n(circuito.conductor_cantidad || 1);
     }
 
@@ -351,7 +434,9 @@ export const calcularTotalesCircuitos = (circuitos = []) => {
     totales.picada_piso_m += n(c.picada_piso_m);
     totales.zanja_m += n(c.zanja_m);
     totales.conductor_metros += n(c.conductor_metros || c.cable_metros);
-    totales.conductor_cantidad += n(c.conductor_cantidad || (c.conductor ? 1 : 0));
+    totales.conductor_cantidad += n(
+      c.conductor_cantidad || (c.conductor ? 1 : 0),
+    );
     totales.conductor_bandeja_metros += n(c.conductor_bandeja_metros);
     totales.conductor_bandeja_cantidad += n(c.conductor_bandeja_cantidad);
     totales.codos_pvc += n(c.codos_pvc);
@@ -363,15 +448,20 @@ export const calcularTotalesCircuitos = (circuitos = []) => {
     const grupo = grupoCaneria(c.tipo_conductor);
     const diametro = c.diametro;
     if (grupo && diametro) {
-      totales[`${grupo}_losa`][diametro] = n(totales[`${grupo}_losa`][diametro]) + n(c.caño_losa);
-      totales[`${grupo}_pared`][diametro] = n(totales[`${grupo}_pared`][diametro]) + n(c.caño_pared);
+      totales[`${grupo}_losa`][diametro] =
+        n(totales[`${grupo}_losa`][diametro]) + n(c.caño_losa);
+      totales[`${grupo}_pared`][diametro] =
+        n(totales[`${grupo}_pared`][diametro]) + n(c.caño_pared);
     }
   });
 
   totales.conductores_detalle = resumirConductores(circuitos);
   totales.conductores_bandeja = resumirConductoresBandeja(circuitos);
   totales.conductores = Object.fromEntries(
-    Object.entries(totales.conductores_detalle).map(([conductor, data]) => [conductor, data.cantidad]),
+    Object.entries(totales.conductores_detalle).map(([conductor, data]) => [
+      conductor,
+      data.cantidad,
+    ]),
   );
 
   return totales;

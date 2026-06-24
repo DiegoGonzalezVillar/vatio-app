@@ -11,8 +11,7 @@ export const calcularDatosTablero = (tablero) => {
   const agregadoCajaCentro = Number(tablero.agregado_caja_centro || 0);
   const agregadoCajaBrazo = Number(tablero.agregado_caja_brazo || 0);
   const agregadoHEspecial = Number(tablero.agregado_h_especial || 0);
-  console.log(alturaLocal);
-  console.log(alturaLlaveLuz);
+
   return {
     bajada_llave_luz: alturaLocal - alturaLlaveLuz,
     bajada_toma: alturaLocal - alturaToma,
